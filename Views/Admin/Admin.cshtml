@@ -1,0 +1,44 @@
+@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+@model List<HotelBookingSystem.Models.Booking.RoomCardViewModel>
+
+<h2>Welcome, Admin!</h2>
+
+<form asp-action="AddRoomType" method="post" style="margin-bottom: 1.5rem; padding: 1rem; background-color: #f2f9e8; border-radius: 8px; max-width: 400px;">
+  <label for="roomType" style="font-weight: 600; display: block; margin-bottom: 0.5rem;">Room Type</label>
+  <input
+    type="text"
+    id="roomType"
+    name="roomType"
+    required
+    class="form-control"
+    style="margin-bottom: 1rem; padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px; width: 100%;"
+  />
+  <button
+    type="submit"
+    class="btn btn-success"
+    style="padding: 0.5rem 1rem; font-weight: 500; border-radius: 4px;"
+  >
+    Add Room Type
+  </button>
+</form>
+
+<h3 style="font-size: 1.3rem; color: #2f4f4f; margin-bottom: 0.5rem;">Available Room Types:</h3>
+<ul style="padding-left: 1.5rem; list-style-type: disc;">
+<div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;">
+@foreach (var room in Model)
+{
+    @await Html.PartialAsync("_RoomCard", room)
+}
+</div>
+<!-- @{
+    var roomTypes = ViewBag.RoomTypes as List<string> ?? new List<string>();
+    foreach (var type in roomTypes)
+    {
+        <li>@type</li>
+    }
+} -->
+</ul>
+
+<a asp-action="Logout">Logout</a>

@@ -1,0 +1,96 @@
+html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  margin-bottom: 60px;
+}
+
+h1 {
+  /* color: white; */
+}
+
+body {
+  position: relative;
+  margin: 0;
+  padding: 0;
+}
+
+body::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-color: rgba(255, 255, 255, 0.3);
+  z-index: -1;
+}
+
+
+.logo-fancy {
+  font-family: 'Georgia', serif;
+  font-weight: 700;
+  font-size: 14px;
+  color: #2e8b57;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.bg-green-cabin {
+    background-color: #D4F2D2 !important;
+    color: white; 
+}
+
+.nav-link-custom {
+    font-weight: 600;
+    font-size: 14px;
+    color: #46765a !important;      
+    padding: 10px 15px;
+    border-radius: 6px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.nav-link-custom:hover {
+    /* background-color: #2E8B57;       */
+    color: #46765a !important;      
+    text-decoration: none;
+}
+
+.logo-round {
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  object-fit: cover;
+}
+.room-card {
+  border: 1px solid #ccc;
+  border-radius: 12px;
+  padding: 1rem;
+  margin: 1rem 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  max-width: 500px;
+  flex: 0 0 calc(33.333% - 0.667rem);
+}
+
+.room-card h4 {
+  color: #2d4739;
+}
+
+.room-card ul {
+  padding-left: 1.2rem;
+  color: #3e3e3e;
+}

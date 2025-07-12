@@ -1,0 +1,18 @@
+@model HotelBookingSystem.Models.Booking.RoomCardViewModel
+
+<div class="room-card" style="border: 1px solid #ccc; border-radius: 12px; padding: 1rem; margin: 1rem 0; box-shadow: 0 2px 8px rgba(0,0,0,0.1); width: 440px;">
+  <h4 style="margin-bottom: 0.5rem; color: #2d4739;">@Model.RoomName</h4>
+
+  <img src="@Model.ImageUrl"
+       alt="@Model.RoomName image"
+       style="width: 100%; border-radius: 8px; margin-bottom: 1rem;" />
+
+  <p style="font-size: 0.95rem; color: #555;">@Model.Description</p>
+
+  <ul style="margin-top: 1rem; padding-left: 1.2rem; color: #3e3e3e;">
+    @foreach (var amenity in Model.Amenities)
+    {
+        <li>@amenity</li>
+    }
+  </ul>
+</div>
