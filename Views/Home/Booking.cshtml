@@ -2,13 +2,53 @@
     ViewData["Title"] = "Booking";
 }
 
-<div class="text-center">
-<div  style='background: #46765a; width: 100%;'>
-    <h1 class="display-4">Welcome to <br/> <span> Mandala Royal Resort </span> </h1>
+<div>
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["Success"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
-   <div class="booking-form-container" style="max-width: 600px; margin: auto; background: #f9f9f9; padding: 20px; border-radius: 12px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
+}
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @TempData["Error"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<div style='width: 100%;'>
+    <h1 class="container-fluid">Find your next stay.. </span> </h1>
+     <div style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
+<div style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
+  <label for="checkIn" class="form-label mb-0">Check-in Date</label>
+  <input type="date" class="form-control" id="checkIn" name="checkIn" required style="width: 180px;" />
+
+  <label for="checkOut" class="form-label mb-0">Check-out Date</label>
+  <input type="date" class="form-control" id="checkOut" name="checkOut" required style="width: 180px;" />
+
+  <button type="button" class="btn btn-info" onclick="checkAvailability()">Check Availability</button>
+</div>
+
+</div>
+
+    </div>
+    <div style="display: flex; flex-direction: row; ">
+    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; ">
+    @if (ViewBag.Rooms != null)
+    {
+        foreach (var room in ViewBag.Rooms as List<HotelBookingSystem.Models.Booking.RoomCardViewModel>)
+        {
+            @await Html.PartialAsync("_RoomCard", room)
+        }
+    }
+    </div>
+  <div class="booking-form-container" style="width: -webkit-fill-available; margin: 12px; height: fit-content; background: #f9f9f9; padding: 20px; border-radius: 12px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
+  
+  <form asp-action="SubmitBooking" method="post">
   <h2 style="text-align:center; margin-bottom: 20px;">Hotel Booking Details</h2>
-  <form>
     <!-- Dates -->
     <div class="form-group mb-3">
       <label for="checkIn">Check-in Date</label>
@@ -18,12 +58,6 @@
     <div class="form-group mb-3">
       <label for="checkOut">Check-out Date</label>
       <input type="date" class="form-control" id="checkOut" name="checkOut" required />
-    </div>
-
-    <!-- Location -->
-    <div class="form-group mb-3">
-      <label for="place">Place</label>
-      <input type="text" class="form-control" id="place" name="place" placeholder="City or Hotel Location" required />
     </div>
 
     <!-- Guest Details -->
@@ -56,6 +90,12 @@
       </select>
     </div>
 
+    <!-- Special Request -->
+     <div class="form-group mb-3">
+       <label for="note">Special Request</label>
+       <textarea class="form-control" id="note" name="note" rows="3" placeholder="Any special requests or additional notes..."></textarea>
+     </div>
+
     <!-- Booking Type -->
     <div class="form-group mb-4">
       <label>Booking Type</label>
@@ -64,15 +104,100 @@
           <input type="radio" name="bookingType" value="OneTime" checked /> One-time
         </label>
         <label>
-          <input type="radio" name="bookingType" value="Recurring" /> Recurring
+          <input type="radio" name="bookingType" value="Recurring" id="isRecurring" onchange="toggleRecurrence()"/> Recurring
         </label>
       </div>
     </div>
 
-    <button type="submit" class="btn btn-success w-100">Book Now</button>
+    <div id="recurrenceOptions" style="display:none;" class="border rounded p-3 bg-light">
+      <h6 class="mb-3">Recurrence Settings</h6>
+      
+      <div class="row mb-3">
+        <div class="col-md-6">
+          <label for="frequency" class="form-label">Repeat</label>
+          <select class="form-control" id="frequency" name="frequency" onchange="updateRecurrenceUI()">
+            <option value="Daily">Daily</option>
+            <option value="Weekly">Weekly</option>
+            <option value="Monthly">Monthly</option>
+          </select>
+        </div>
+        <div class="col-md-6">
+          <label for="interval" class="form-label">Every</label>
+          <div class="input-group">
+            <input type="number" class="form-control" id="interval" name="interval" min="1" value="1" onchange="updateRecurrenceUI()" />
+            <span class="input-group-text" id="intervalLabel">day(s)</span>
+          </div>
+        </div>
+      </div>
+
+      <div id="weeklyOptions" style="display:none;" class="mb-3">
+        <label class="form-label">Days of the Week</label>
+        <div class="row">
+          <div class="col-md-3">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="days" value="Monday" id="monday" />
+              <label class="form-check-label" for="monday">Monday</label>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="days" value="Tuesday" id="tuesday" />
+              <label class="form-check-label" for="tuesday">Tuesday</label>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="days" value="Wednesday" id="wednesday" />
+              <label class="form-check-label" for="wednesday">Wednesday</label>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="days" value="Thursday" id="thursday" />
+              <label class="form-check-label" for="thursday">Thursday</label>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="days" value="Friday" id="friday" />
+              <label class="form-check-label" for="friday">Friday</label>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="days" value="Saturday" id="saturday" />
+              <label class="form-check-label" for="saturday">Saturday</label>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="days" value="Sunday" id="sunday" />
+              <label class="form-check-label" for="sunday">Sunday</label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <div class="alert alert-warning">
+          <small>
+            <strong>Note:</strong> Recurring bookings will end on the check-out date you selected above.
+          </small>
+        </div>
+      </div>
+
+      <div class="alert alert-info">
+        <small>
+          <strong>Summary:</strong> <span id="recurrenceSummary">Book daily starting from check-in date</span>
+        </small>
+      </div>
+    </div>
+    <button type="submit" class="btn btn-success w-100">Add to Cart</button>
+
+    <div id="availabilityResult" style="margin-top:10px;"></div>
   </form>
 </div>
-
+</div>
 </div>
 
 @section Scripts {
@@ -97,5 +222,204 @@ document.addEventListener('DOMContentLoaded', function () {
         checkOut.setAttribute('min', checkIn.value);
     });
 });
+</script>
+
+<script>
+  function toggleRecurrence() {
+    const recurringRadio = document.getElementById("isRecurring");
+    const options = document.getElementById("recurrenceOptions");
+    const checkIn = document.getElementById("checkIn").value;
+    const checkOut = document.getElementById("checkOut").value;
+
+    if (recurringRadio.checked) {
+      // Validate check-out date
+      if (!checkIn || !checkOut) {
+        alert("Please select both check-in and check-out dates first.");
+        recurringRadio.checked = false;
+        return;
+      }
+
+      const checkInDate = new Date(checkIn);
+      const checkOutDate = new Date(checkOut);
+      const today = new Date();
+      
+      // Calculate weeks until check-out
+      const weeksUntilCheckOut = Math.ceil((checkOutDate - today) / (1000 * 60 * 60 * 24 * 7));
+      
+      // Set maximum recurrence interval based on check-out distance
+      let maxInterval = 1;
+      if (weeksUntilCheckOut <= 2) {
+        maxInterval = 3; // If check-out is within 2 weeks, max interval is 3 weeks
+      } else if (weeksUntilCheckOut <= 4) {
+        maxInterval = 2; // If check-out is within 4 weeks, max interval is 2 weeks
+      } else {
+        maxInterval = 1; // Otherwise, max interval is 1 week
+      }
+
+      // Store the max interval for use in updateRecurrenceUI
+      document.getElementById("recurrenceOptions").setAttribute("data-max-interval", maxInterval);
+
+      options.style.display = "block";
+      updateRecurrenceUI();
+    } else {
+      options.style.display = "none";
+    }
+  }
+
+  function updateRecurrenceUI() {
+    const frequency = document.getElementById("frequency").value;
+    const interval = document.getElementById("interval");
+    const intervalValue = parseInt(interval.value);
+    const weeklyOptions = document.getElementById("weeklyOptions");
+    const intervalLabel = document.getElementById("intervalLabel");
+    const summary = document.getElementById("recurrenceSummary");
+    
+    // Get max interval from stored data
+    const maxInterval = parseInt(document.getElementById("recurrenceOptions").getAttribute("data-max-interval") || "1");
+    
+    // Validate interval based on frequency and max allowed
+    if (frequency === "Weekly" && intervalValue > maxInterval) {
+      alert(`For your selected check-out date, the maximum recurrence interval is ${maxInterval} week(s).`);
+      interval.value = maxInterval;
+      intervalValue = maxInterval;
+    }
+    
+    // Update interval label based on frequency
+    switch(frequency) {
+      case "Daily":
+        intervalLabel.textContent = "day(s)";
+        weeklyOptions.style.display = "none";
+        break;
+      case "Weekly":
+        intervalLabel.textContent = "week(s)";
+        weeklyOptions.style.display = "block";
+        // Set max attribute for weekly intervals
+        interval.setAttribute("max", maxInterval);
+        break;
+      case "Monthly":
+        intervalLabel.textContent = "month(s)";
+        weeklyOptions.style.display = "none";
+        break;
+    }
+    
+    // Update summary
+    let summaryText = `Book ${frequency.toLowerCase()} every ${intervalValue} `;
+    if (frequency === "Daily") {
+      summaryText += intervalValue === 1 ? "day" : "days";
+    } else if (frequency === "Weekly") {
+      summaryText += intervalValue === 1 ? "week" : "weeks";
+    } else if (frequency === "Monthly") {
+      summaryText += intervalValue === 1 ? "month" : "months";
+    }
+    
+    summaryText += " starting from check-in date until check-out date";
+    summary.textContent = summaryText;
+  }
+
+    // Initialize recurrence UI when page loads
+  document.addEventListener('DOMContentLoaded', function() {
+    updateRecurrenceUI();
+  });
+
+  // Form validation
+  document.querySelector('form').addEventListener('submit', function(e) {
+    const recurringRadio = document.getElementById("isRecurring");
+    const checkIn = document.getElementById("checkIn").value;
+    const checkOut = document.getElementById("checkOut").value;
+
+    if (recurringRadio.checked) {
+      if (!checkIn || !checkOut) {
+        e.preventDefault();
+        alert("Please select both check-in and check-out dates for recurring bookings.");
+        return;
+      }
+
+      const checkInDate = new Date(checkIn);
+      const checkOutDate = new Date(checkOut);
+      const today = new Date();
+      
+      // Calculate weeks until check-out
+      const weeksUntilCheckOut = Math.ceil((checkOutDate - today) / (1000 * 60 * 60 * 24 * 7));
+      
+      // Get current interval value
+      const frequency = document.getElementById("frequency").value;
+      const intervalValue = parseInt(document.getElementById("interval").value);
+      
+      // Validate interval based on check-out distance
+      if (frequency === "Weekly") {
+        let maxInterval = 1;
+        if (weeksUntilCheckOut <= 2) {
+          maxInterval = 3; // If check-out is within 2 weeks, max interval is 3 weeks
+        } else if (weeksUntilCheckOut <= 4) {
+          maxInterval = 2; // If check-out is within 4 weeks, max interval is 2 weeks
+        } else {
+          maxInterval = 1; // Otherwise, max interval is 1 week
+        }
+        
+        if (intervalValue > maxInterval) {
+          e.preventDefault();
+          alert(`For your selected check-out date (${weeksUntilCheckOut} weeks away), the maximum recurrence interval is ${maxInterval} week(s).`);
+          return;
+        }
+      }
+    }
+  });
+</script>
+
+<script>
+function checkAvailability() {
+    const checkIn = document.getElementById('checkIn').value;
+    const checkOut = document.getElementById('checkOut').value;
+    const rooms = document.getElementById('rooms').value;
+
+    if (!checkIn || !checkOut) {
+        document.getElementById('availabilityResult').innerText = "Please select check-in and check-out dates.";
+        return;
+    }
+
+    fetch(`/Home/GetAllRoomAvailabilities?checkIn=${checkIn}&checkOut=${checkOut}&rooms=${rooms}`)
+        .then(response => response.json())
+        .then(data => {
+            let msg = '';
+            data.forEach(room => {
+                if (room.isAvailable) {
+                    msg += `${room.roomName}: ${room.available} Available Rooms\n`;
+                } else {
+                    msg += `${room.roomName}: Not available for the selected dates\n`;
+                }
+            });
+            document.getElementById('availabilityResult').innerText = msg;
+            document.getElementById('availabilityResult').style.color = 'green';
+        });
+}
+</script>
+
+<script>
+function updateRoomAvailabilities() {
+    const checkIn = document.getElementById('checkIn').value;
+    const checkOut = document.getElementById('checkOut').value;
+    const rooms = document.getElementById('rooms').value;
+    if (!checkIn || !checkOut) return;
+
+    fetch(`/Home/GetAllRoomAvailabilities?checkIn=${checkIn}&checkOut=${checkOut}&rooms=${rooms}`)
+        .then(response => response.json())
+        .then(data => {
+            data.forEach(room => {
+                const el = document.querySelector(`[data-room-name="${room.roomName}"] .available-rooms`);
+                if (el) {
+                    if (room.isAvailable) {
+                        el.innerText = `${room.available} Available Rooms`;
+                    } else {
+                        el.innerText = `Not available for the selected dates`;
+                    }
+                }
+            });
+        });
+}
+
+// Call this when dates change
+document.getElementById('checkIn').addEventListener('change', updateRoomAvailabilities);
+document.getElementById('checkOut').addEventListener('change', updateRoomAvailabilities);
+document.getElementById('rooms').addEventListener('change', updateRoomAvailabilities);
 </script>
 }

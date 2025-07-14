@@ -13,11 +13,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/Users/IIT/Msc/EA/Hotel-Booking/HotelBookingSystem.csproj",
+      "projectUniqueName": "/Users/rashi/IIT/EAD/Hotel-Booking/HotelBookingSystem.csproj",
       "projectName": "HotelBookingSystem",
-      "projectPath": "/Users/IIT/Msc/EA/Hotel-Booking/HotelBookingSystem.csproj",
+      "projectPath": "/Users/rashi/IIT/EAD/Hotel-Booking/HotelBookingSystem.csproj",
       "packagesPath": "/Users/rashi/.nuget/packages/",
-      "outputPath": "/Users/IIT/Msc/EA/Hotel-Booking/obj/",
+      "outputPath": "/Users/rashi/IIT/EAD/Hotel-Booking/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "/Users/rashi/.nuget/NuGet/NuGet.Config"
@@ -67,7 +67,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/8.0.411/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/8.0.412/PortableRuntimeIdentifierGraph.json"
       }
     }
   }

@@ -1,18 +1,64 @@
 @model HotelBookingSystem.Models.Booking.RoomCardViewModel
 
-<div class="room-card" style="border: 1px solid #ccc; border-radius: 12px; padding: 1rem; margin: 1rem 0; box-shadow: 0 2px 8px rgba(0,0,0,0.1); width: 440px;">
+<div class="room-card" data-room-name="@Model.RoomName" style="border: 1px solid #ccc; border-radius: 12px; padding: 1rem; margin-top: 1rem; box-shadow: 0 2px 8px rgba(0,0,0,0.1); width: 400px; height: auto;">
+ <div style='display: flex; flexDirection: row; justify-content: space-between;'>
   <h4 style="margin-bottom: 0.5rem; color: #2d4739;">@Model.RoomName</h4>
-
+  <div>
+     @if (!Model.isDefault)
+    {
+    <button type="button" class="btn btn-outline-warning btn-sm" onclick="openUpdateModal('@Model.RoomName', '@Model.Description', [@string.Join(",", Model.Amenities.Select(a => $"'{a}'"))])">
+      <i class="fas fa-edit me-1"></i>
+    </button>
+ 
+      <button type="button" class="btn btn-outline-danger btn-sm" onclick="deleteRoom('@Model.RoomName')">
+        <i class="fas fa-trash me-1"></i>
+      </button>
+    }
+  </div>
+  
+  </div> 
   <img src="@Model.ImageUrl"
        alt="@Model.RoomName image"
-       style="width: 100%; border-radius: 8px; margin-bottom: 1rem;" />
+       style="width: 100%; height: 250px; border-radius: 8px; margin-bottom: 1rem;" />
 
   <p style="font-size: 0.95rem; color: #555;">@Model.Description</p>
+  <p class="available-rooms" style="font-size: 0.8rem; color: #5559;">@Model.NumberOfRooms Available Rooms</p>
+  @if (!string.IsNullOrEmpty(Model.Price))
+  {
+    <p style="font-size: 1.1rem; font-weight: 600; color: #28a745; margin: 0.5rem 0;">
+      <i class="fas fa-dollar-sign me-1"></i>@Model.Price per night
+    </p>
+  }
 
-  <ul style="margin-top: 1rem; padding-left: 1.2rem; color: #3e3e3e;">
+  <ul style="margin-top: 1rem; padding-left: 1.2rem; color: #3e3e3e; display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.1rem;">
     @foreach (var amenity in Model.Amenities)
     {
-        <li>@amenity</li>
+        <li style="display: flex; align-items: center; gap: 0.5rem;">
+          @{
+              string iconClass = amenity switch
+              {
+                  "Wi-Fi" => "fas fa-wifi",
+                  "TV" => "fas fa-tv",
+                  "Air Conditioning" => "fas fa-snowflake",
+                  "Mini Bar" => "fas fa-glass-martini",
+                  "Laundary Service" => "fas fa-tshirt",
+                  "Balcony" => "fas fa-door-open",
+                  "Ocean View" => "fas fa-water",
+                  "King Bed" => "fas fa-bed",
+                  "Queen Bed" => "fas fa-bed",
+                  "Jacuzzi" => "fas fa-hot-tub",
+                  "Kitchen" => "fas fa-utensils",
+                  "Free Parking" => "fas fa-parking",
+                  "Gym Access" => "fas fa-dumbbell",
+                  "Pool Access" => "fas fa-swimming-pool",
+                  "Spa Access" => "fas fa-spa",
+                  "Bath Tub" => "fas fa-bath",
+                  _ => "fas fa-check" // Default icon for unknown amenities
+              };
+          }
+          <i class="@iconClass" style="color: #46765a; width: 16px;"></i>
+          <span>@amenity</span>
+        </li>
     }
   </ul>
 </div>

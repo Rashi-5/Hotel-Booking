@@ -4,7 +4,7 @@
 
 <h2>Admin Login</h2>
 
-<form asp-action="Login" method="post">
+<form asp-action="Authenticate" method="post">
     <div>
         <label>Username</label>
         <input type="text" name="username" required />
@@ -12,6 +12,12 @@
     <div>
         <label>Password</label>
         <input type="password" name="password" required />
+    </div>
+    <div style="margin: 10px 0;">
+        <label>
+            <input type="checkbox" name="rememberMe" value="true" />
+            Remember Me (Stay logged in for 7 days)
+        </label>
     </div>
     <button type="submit">Login</button>
 </form>

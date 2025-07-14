@@ -3,42 +3,413 @@
 }
 @model List<HotelBookingSystem.Models.Booking.RoomCardViewModel>
 
-<h2>Welcome, Admin!</h2>
+<div style='display: flex; justify-content: space-between; padding: 0 24px'>
+  <div>
+    <h2>Welcome!</h2>
+    @if (Context.Session.GetString("RememberMe") == "true")
+    {
+        <small style="color: #28a745; font-style: italic;">
+            <i class="fas fa-clock me-1"></i>Session extended (Remember Me active)
+        </small>
+    }
+  </div>
+  <div>
+    <button
+      type="button"
+      class="btn btn-success"
+      style="padding: 0.5rem 1rem; font-weight: 500; border-radius: 4px; margin-bottom: 1.5rem;"
+      data-bs-toggle="modal"
+      data-bs-target="#addRoomModal"
+    >
+  Add New Room
+</button>
+    <button
+      type="button"
+      class="btn btn-primary"
+      style="padding: 0.5rem 1rem; font-weight: 500; border-radius: 4px; margin-bottom: 1.5rem;"
+      onclick="logout()"
+    >
+  Logout
+</button>
+  </div>
+</div>
 
-<form asp-action="AddRoomType" method="post" style="margin-bottom: 1.5rem; padding: 1rem; background-color: #f2f9e8; border-radius: 8px; max-width: 400px;">
-  <label for="roomType" style="font-weight: 600; display: block; margin-bottom: 0.5rem;">Room Type</label>
-  <input
-    type="text"
-    id="roomType"
-    name="roomType"
-    required
-    class="form-control"
-    style="margin-bottom: 1rem; padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px; width: 100%;"
-  />
-  <button
-    type="submit"
-    class="btn btn-success"
-    style="padding: 0.5rem 1rem; font-weight: 500; border-radius: 4px;"
-  >
-    Add Room Type
-  </button>
-</form>
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @TempData["Error"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
 
-<h3 style="font-size: 1.3rem; color: #2f4f4f; margin-bottom: 0.5rem;">Available Room Types:</h3>
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["Success"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<!-- Modal -->
+<div class="modal fade" id="addRoomModal" tabindex="-1" aria-labelledby="addRoomModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="addRoomModalLabel">Add New Room Type</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form asp-action="CreateRoomType" method="post" id="roomForm">
+        <input type="hidden" id="isUpdate" name="isUpdate" value="false" />
+        <input type="hidden" id="originalRoomName" name="originalRoomName" value="" />
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="roomType" class="form-label">Room Type Name</label>
+            <input
+              type="text"
+              id="roomType"
+              name="roomType"
+              required
+              class="form-control"
+              placeholder="Enter room type name"
+              onblur="checkRoomTypeExists()"
+            />
+            <div id="roomTypeError" class="text-danger" style="display: none; margin-top: 5px;">
+              This room type already exists!
+            </div>
+          </div>
+           <div class="mb-3">
+            <label for="roomDescription" class="form-label">Room Description</label>
+            <input
+              type="text"
+              id="roomDescription"
+              name="roomDescription"
+              required
+              class="form-control"
+              placeholder="Enter description"
+            />
+          </div>
+          <div class="mb-3">
+            <label for="price" class="form-label">Room Price</label>
+            <input
+              type="number"
+              id="price"
+              name="price"
+              required
+              min="1"
+              max="10000"
+              step="0.01"
+              class="form-control"
+              placeholder="Enter Price ($ USD)"
+              onblur="validatePrice()"
+            />
+            <div id="priceError" class="text-danger" style="display: none; margin-top: 5px;">
+              Please enter a valid price between $1 and $10,000
+            </div>
+          </div>
+          <div class="mb-3">
+            <label for="price" class="form-label">Number of Rooms</label>
+            <input
+              type="number"
+              id="NumberOfRooms"
+              name="NumberOfRooms"
+              required
+              min="1"
+              max="10"
+              step="0.01"
+              class="form-control"
+              placeholder="Number of Rooms"
+            />
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Amenities</label>
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" name="amenities" value="Wi-Fi" id="amenity-wifi">
+                  <label class="form-check-label" for="amenity-wifi">
+                    <i class="fas fa-wifi me-2"></i>Wi-Fi
+                  </label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" name="amenities" value="TV" id="amenity-tv">
+                  <label class="form-check-label" for="amenity-tv">
+                    <i class="fas fa-tv me-2"></i>TV
+                  </label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" name="amenities" value="Air Conditioning" id="amenity-ac">
+                  <label class="form-check-label" for="amenity-ac">
+                    <i class="fas fa-snowflake me-2"></i>Air Conditioning
+                  </label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" name="amenities" value="Mini Bar" id="amenity-minibar">
+                  <label class="form-check-label" for="amenity-minibar">
+                    <i class="fas fa-glass-martini me-2"></i>Mini Bar
+                  </label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" name="amenities" value="Laundary Service" id="amenity-roomservice">
+                  <label class="form-check-label" for="amenity-roomservice">
+                    <i class="fas fa-tshirt me-2"></i>Laundary Service
+                  </label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" name="amenities" value="Balcony" id="amenity-balcony">
+                  <label class="form-check-label" for="amenity-balcony">
+                    <i class="fas fa-door-open me-2"></i>Balcony
+                  </label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" name="amenities" value="Ocean View" id="amenity-oceanview">
+                  <label class="form-check-label" for="amenity-oceanview">
+                    <i class="fas fa-water me-2"></i>Ocean View
+                  </label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" name="amenities" value="King Bed" id="amenity-kingbed">
+                  <label class="form-check-label" for="amenity-kingbed">
+                    <i class="fas fa-bed me-2"></i>King Bed
+                  </label>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" name="amenities" value="Queen Bed" id="amenity-queenbed">
+                  <label class="form-check-label" for="amenity-queenbed">
+                    <i class="fas fa-bed me-2"></i>Queen Bed
+                  </label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" name="amenities" value="Jacuzzi" id="amenity-jacuzzi">
+                  <label class="form-check-label" for="amenity-jacuzzi">
+                    <i class="fas fa-hot-tub me-2"></i>Jacuzzi
+                  </label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" name="amenities" value="Kitchen" id="amenity-kitchen">
+                  <label class="form-check-label" for="amenity-kitchen">
+                    <i class="fas fa-utensils me-2"></i>Kitchen
+                  </label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" name="amenities" value="Free Parking" id="amenity-parking">
+                  <label class="form-check-label" for="amenity-parking">
+                    <i class="fas fa-parking me-2"></i>Free Parking
+                  </label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" name="amenities" value="Gym Access" id="amenity-gym">
+                  <label class="form-check-label" for="amenity-gym">
+                    <i class="fas fa-dumbbell me-2"></i>Gym Access
+                  </label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" name="amenities" value="Pool Access" id="amenity-pool">
+                  <label class="form-check-label" for="amenity-pool">
+                    <i class="fas fa-swimming-pool me-2"></i>Pool Access
+                  </label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" name="amenities" value="Spa Access" id="amenity-spa">
+                  <label class="form-check-label" for="amenity-spa">
+                    <i class="fas fa-spa me-2"></i>Spa Access
+                  </label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" name="amenities" value="Bath Tub" id="amenity-bath">
+                  <label class="form-check-label" for="amenity-bath">
+                    <i class="fas fa-bath me-2"></i>Bath Tub
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-success">Add Room Type</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<h3 style="font-size: 1.3rem; color: #2f4f4f; margin-bottom: 0.5rem; padding-left: 1.5rem;">Available Room Types:</h3>
 <ul style="padding-left: 1.5rem; list-style-type: disc;">
-<div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;">
+<div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.2rem;">
 @foreach (var room in Model)
 {
     @await Html.PartialAsync("_RoomCard", room)
 }
 </div>
-<!-- @{
-    var roomTypes = ViewBag.RoomTypes as List<string> ?? new List<string>();
-    foreach (var type in roomTypes)
-    {
-        <li>@type</li>
-    }
-} -->
 </ul>
 
-<a asp-action="Logout">Logout</a>
+<script>
+function checkRoomTypeExists() {
+    const roomTypeInput = document.getElementById('roomType');
+    const errorDiv = document.getElementById('roomTypeError');
+    const submitBtn = document.querySelector('button[type="submit"]');
+    const isUpdate = document.getElementById('isUpdate').value === 'true';
+    const originalRoomName = document.getElementById('originalRoomName').value;
+    
+    const roomType = roomTypeInput.value.trim();
+    if (roomType === '') {
+        errorDiv.style.display = 'none';
+        submitBtn.disabled = false;
+        return;
+    }
+    
+    // Get existing room types from the page
+    const existingRoomTypes = [];
+    @foreach (var room in Model)
+    {
+        <text>existingRoomTypes.push('@room.RoomName');</text>
+    }
+    
+    // Check if room type already exists (case-insensitive)
+    let exists = false;
+    if (isUpdate) {
+        // For updates, exclude the current room being updated
+        exists = existingRoomTypes.some(existing => 
+            existing.toLowerCase() === roomType.toLowerCase() && 
+            existing.toLowerCase() !== originalRoomName.toLowerCase()
+        );
+    } else {
+        // For new rooms, check against all existing rooms
+        exists = existingRoomTypes.some(existing => 
+            existing.toLowerCase() === roomType.toLowerCase()
+        );
+    }
+    
+    if (exists) {
+        errorDiv.style.display = 'block';
+        submitBtn.disabled = true;
+    } else {
+        errorDiv.style.display = 'none';
+        submitBtn.disabled = false;
+    }
+}
+
+function validatePrice() {
+    const priceInput = document.getElementById('price');
+    const errorDiv = document.getElementById('priceError');
+    const submitBtn = document.querySelector('button[type="submit"]');
+    
+    const price = parseFloat(priceInput.value);
+    
+    if (isNaN(price) || price < 1 || price > 10000) {
+        errorDiv.style.display = 'block';
+        submitBtn.disabled = true;
+    } else {
+        errorDiv.style.display = 'none';
+        submitBtn.disabled = false;
+    }
+}
+
+// Also check on form submission
+document.querySelector('form').addEventListener('submit', function(e) {
+    const roomTypeInput = document.getElementById('roomType');
+    const roomType = roomTypeInput.value.trim();
+    
+    if (roomType === '') return;
+    
+    const existingRoomTypes = [];
+    @foreach (var room in Model)
+    {
+        <text>existingRoomTypes.push('@room.RoomName');</text>
+    }
+    
+    const exists = existingRoomTypes.some(existing => 
+        existing.toLowerCase() === roomType.toLowerCase()
+    );
+    
+    if (exists) {
+        e.preventDefault();
+        alert('This room type already exists! Please choose a different name.');
+    }
+});
+
+function openUpdateModal(roomName, description, amenities) {
+    // Set the form to update mode
+    document.getElementById('isUpdate').value = 'true';
+    document.getElementById('originalRoomName').value = roomName;
+    
+    // Set the form fields with current values
+    document.getElementById('roomType').value = roomName;
+    document.getElementById('roomDescription').value = description;
+    
+    // Clear all checkboxes first
+    const checkboxes = document.querySelectorAll('#addRoomModal input[type="checkbox"]');
+    checkboxes.forEach(checkbox => checkbox.checked = false);
+    
+    // Check the amenities that the room currently has
+    if (amenities && amenities.length > 0) {
+        amenities.forEach(amenity => {
+            // Remove quotes if present
+            const cleanAmenity = amenity.replace(/['"]/g, '');
+            const checkbox = document.querySelector(`#addRoomModal input[value="${cleanAmenity}"]`);
+            if (checkbox) {
+                checkbox.checked = true;
+            }
+        });
+    }
+    
+    // Update modal title and button text
+    document.getElementById('addRoomModalLabel').textContent = 'Update Room Type';
+    document.querySelector('#addRoomModal button[type="submit"]').textContent = 'Update Room Type';
+    
+    // Clear any existing error messages
+    document.getElementById('roomTypeError').style.display = 'none';
+    document.querySelector('#addRoomModal button[type="submit"]').disabled = false;
+    
+    // Open the modal
+    const modal = new bootstrap.Modal(document.getElementById('addRoomModal'));
+    modal.show();
+}
+
+function resetModalToAdd() {
+    // Reset form to add mode
+    document.getElementById('isUpdate').value = 'false';
+    document.getElementById('originalRoomName').value = '';
+    
+    // Clear form fields
+    document.getElementById('roomType').value = '';
+    document.getElementById('roomDescription').value = '';
+    
+    // Clear all checkboxes
+    const checkboxes = document.querySelectorAll('#addRoomModal input[type="checkbox"]');
+    checkboxes.forEach(checkbox => checkbox.checked = false);
+    
+    // Reset modal title and button text
+    document.getElementById('addRoomModalLabel').textContent = 'Add New Room Type';
+    document.querySelector('#addRoomModal button[type="submit"]').textContent = 'Add Room Type';
+    
+    // Clear error messages
+    document.getElementById('roomTypeError').style.display = 'none';
+    document.querySelector('#addRoomModal button[type="submit"]').disabled = false;
+}
+
+function deleteRoom(roomName) {
+    if (confirm(`Are you sure you want to delete the room type "${roomName}"?`)) {
+        // Create a form and submit it
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '@Url.Action("DeleteRoomType", "Admin")';
+        
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'roomName';
+        input.value = roomName;
+        
+        form.appendChild(input);
+        document.body.appendChild(form);
+        form.submit();
+    }
+}
+
+// Reset modal when it's closed
+document.getElementById('addRoomModal').addEventListener('hidden.bs.modal', function () {
+    resetModalToAdd();
+});
+</script>

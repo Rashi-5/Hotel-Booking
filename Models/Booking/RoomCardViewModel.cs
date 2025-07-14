@@ -6,5 +6,8 @@ namespace HotelBookingSystem.Models.Booking
         public string ImageUrl { get; set; }
         public string Description { get; set; }
         public List<string> Amenities { get; set; }
+        public bool isDefault { get; set; } 
+        public string Price { get; set; }
+        public int NumberOfRooms { get; set; }
     }
 }
