@@ -94,3 +94,77 @@ body::before {
   padding-left: 1.2rem;
   color: #3e3e3e;
 }
+
+
+.register-page {
+  min-height: 100vh;
+  background: url('/images/body.jpg') no-repeat center center fixed;
+  background-size: cover;
+  padding: 40px 0;
+  overflow-y: auto;
+  height: 100%;
+}
+
+.admin-page {
+  min-height: 100vh;
+  background: url('/images/bg.jpg') no-repeat center center fixed;
+  background-size: cover;
+  padding: 40px 0;
+  overflow-y: auto;
+  height: 100%;
+}
+
+.register-title {
+  text-align: center;
+  color: #fff;
+  margin-bottom: 20px;
+  margin-top: 12rem;
+}
+
+.register-form {
+  width: 60%;
+  margin: 0 auto;
+  padding: 24px;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+  font-family: Arial, sans-serif;
+  display: flex;
+  flex-direction: column;
+  justify-items: center;
+}
+
+.form-group {
+  margin-bottom: 15px;
+  display: flex;
+  flex-direction: column;
+}
+
+label {
+  font-weight: bold;
+  margin-bottom: 5px;
+  color: #333;
+}
+
+input[type="text"],
+input[type="password"],
+input[type="email"] {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.error-text {
+  color: red;
+  font-size: 13px;
+  margin-top: 4px;
+}
+
+button[type="submit"] {
+  width: 100%;
+  padding: 10px;
+  border-radius: 12px;
+  border: none;
+  background-color: #007bff;
+}

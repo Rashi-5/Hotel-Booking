@@ -23,8 +23,18 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav ms-auto">
                         <li class="nav-item">
-                            <a class="nav-link nav-link-custom" asp-controller="Home" asp-action="Booking">
-                                Booking <i class="fas fa-home"></i> 
+                            <a class="nav-link nav-link-custom" asp-controller="Home" asp-action="Index">
+                                <i class="fas fa-home"> </i> Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link nav-link-custom" asp-controller="User" asp-action="Login">
+                                <i class="fas fa-sign-in-alt"></i> Login
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link nav-link-custom" asp-controller="User" asp-action="MyBookings">
+                                My Bookings <i class="fas fa-calendar-check"></i>
                             </a>
                         </li>
                         <li class="nav-item">

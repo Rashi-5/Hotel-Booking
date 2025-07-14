@@ -58,14 +58,11 @@ public class HomeController : Controller
 
             var checkInDate = DateTime.Parse(checkIn);
             var checkOutDate = DateTime.Parse(checkOut);
-            
-            // Set default values for nullable parameters
             adults ??= 1;
             children ??= 0;
             rooms ??= 1;
             interval ??= 1;
 
-            // Load rooms from session or default
             var allRooms = HttpContext.Session.GetObjectFromJson<List<RoomCardViewModel>>("Rooms") ?? RoomDataHelper.GetDefaultRooms();
             var selectedRoom = allRooms.FirstOrDefault(r => r.RoomName == roomType);
             if (selectedRoom == null)
@@ -73,21 +70,16 @@ public class HomeController : Controller
                 TempData["Error"] = $"Room type '{roomType}' not found.";
                 return RedirectToAction("Booking");
             }
-
-            // Check if enough rooms are available
             if (selectedRoom.NumberOfRooms < rooms.Value)
             {
                 TempData["Error"] = $"Not enough rooms available. Only {selectedRoom.NumberOfRooms} left for '{roomType}'.";
                 return RedirectToAction("Booking");
             }
 
-            // 1. Load or initialize per-date booking dictionary
             var roomBookings = HttpContext.Session.GetObjectFromJson<Dictionary<string, Dictionary<DateTime, int>>>("RoomBookings")
                 ?? new Dictionary<string, Dictionary<DateTime, int>>();
 
-            // 2. Check availability for each date
             List<DateTime> bookingDates = new List<DateTime>();
-            
             if (bookingType == "Recurring")
             {
                 if (frequency == "Daily")
@@ -126,7 +118,7 @@ public class HomeController : Controller
             {
                 bookingDates.Add(checkInDate);
             }
-            
+
             foreach (var date in bookingDates)
             {
                 if (!roomBookings.ContainsKey(roomType))
@@ -140,7 +132,6 @@ public class HomeController : Controller
                 }
             }
 
-            // 3. Deduct rooms for each date
             foreach (var date in bookingDates)
             {
                 if (!roomBookings[roomType].ContainsKey(date))
@@ -148,12 +139,34 @@ public class HomeController : Controller
                 roomBookings[roomType][date] += rooms.Value;
             }
 
-            // 4. Save back to session
             HttpContext.Session.SetObjectAsJson("RoomBookings", roomBookings);
-            
-            // Log the booking details
+
+            // --- Associate booking with user ---
+            var username = HttpContext.Session.GetString("Username");
+            if (!string.IsNullOrEmpty(username))
+            {
+                var userBookings = HttpContext.Session.GetObjectFromJson<List<BookingFormModel>>("UserBookings_" + username) ?? new List<BookingFormModel>();
+                // Calculate total price
+                decimal pricePerRoom = 0;
+                decimal.TryParse(selectedRoom?.Price, out pricePerRoom);
+                decimal totalPrice = pricePerRoom * rooms.Value * bookingDates.Count;
+                var booking = new BookingFormModel {
+                    BookingId = Guid.NewGuid(), 
+                    CustomerName = username,
+                    CheckInDate = checkInDate,
+                    CheckOutDate = checkInDate,
+                    Username = username,
+                    Note = note,
+                    NumberOfRooms = rooms.Value,
+                    TotalPrice = totalPrice,
+                    RoomType = roomType
+                };
+                userBookings.Add(booking);
+                HttpContext.Session.SetObjectAsJson("UserBookings_" + username, userBookings);
+            }
+            // --- End user association ---
+
             _logger.LogInformation($"Booking submitted: {bookingDates.Count} dates, Room: {roomType}, Guests: {adults} adults, {children} children");
-            
             TempData["Success"] = $"Booking submitted successfully! {bookingDates.Count} booking(s) created. {rooms.Value} room(s) deducted from '{roomType}'.";
             return RedirectToAction("Booking");
         }

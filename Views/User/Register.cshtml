@@ -1,0 +1,40 @@
+@model HotelBookingSystem.Models.UserModel
+@{
+    ViewData["Title"] = "User Registration";
+}
+
+<div class="register-page">
+    <h2 class="register-title">User Registration</h2>
+
+    <form asp-action="Register" method="post" class="register-form">
+        <div class="form-group">
+            <label>Username</label>
+            <input asp-for="Username" />
+            <span asp-validation-for="Username" class="error-text"></span>
+        </div>
+        <div class="form-group">
+            <label>Email</label>
+            <input asp-for="Email" />
+            <span asp-validation-for="Email" class="error-text"></span>
+        </div>
+        <div class="form-group">
+            <label>Password</label>
+            <input asp-for="Password" type="password" />
+            <span asp-validation-for="Password" class="error-text"></span>
+        </div>
+        <button type="submit">Register</button>
+    </form>
+
+    <span style="color: white; text-align: center; display: flex; justify-content: center; padding: 24px;">
+        Already have an account? <a href="/User/Login" style="color:rgb(0, 255, 110); text-decoration: underline; margin-left: 5px;">Sign In</a>
+    </span>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <p style="color:green;">@TempData["Success"]</p>
+}
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+} 

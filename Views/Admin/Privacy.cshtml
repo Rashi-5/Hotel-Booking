@@ -1,26 +1,27 @@
 ﻿@{
     ViewData["Title"] = "Admin Login";
 }
+<div class="admin-page">
+    <h2 class="register-title" style="color: black;">Admin Login</h2>
 
-<h2>Admin Login</h2>
-
-<form asp-action="Authenticate" method="post">
-    <div>
-        <label>Username</label>
-        <input type="text" name="username" required />
-    </div>
-    <div>
-        <label>Password</label>
-        <input type="password" name="password" required />
-    </div>
-    <div style="margin: 10px 0;">
-        <label>
-            <input type="checkbox" name="rememberMe" value="true" />
-            Remember Me (Stay logged in for 7 days)
-        </label>
-    </div>
-    <button type="submit">Login</button>
-</form>
+    <form asp-action="Authenticate" method="post" class="register-form">
+        <div class="form-group">
+            <label>Username</label>
+            <input type="text" name="username" required />
+        </div>
+        <div class="form-group">
+            <label>Password</label>
+            <input type="password" name="password" required />
+        </div>
+        <div style="margin: 10px 0;">
+            <label>
+                <input type="checkbox" name="rememberMe" value="true" />
+                Remember Me (Stay logged in for 7 days)
+            </label>
+        </div>
+        <button type="submit">Login</button>
+    </form>
+</div>
 
 @if (TempData["Error"] != null)
 {

@@ -40,23 +40,32 @@ public class AdminController : Controller
     [HttpPost]
     public IActionResult Authenticate(string username, string password, bool rememberMe = false)
     {
-        if (username == AdminUsername && password == AdminPassword)
+        try
         {
-            HttpContext.Session.SetString("IsAdminLoggedIn", "true");
-            
-            // If "Remember Me" is checked, set a longer session timeout
-            if (rememberMe)
+            if (username == AdminUsername && password == AdminPassword)
             {
-                HttpContext.Session.SetString("RememberMe", "true");
-                // Set session to last for 7 days
-                HttpContext.Session.SetString("LoginTime", DateTime.UtcNow.ToString());
+                HttpContext.Session.SetString("IsAdminLoggedIn", "true");
+                
+                // If "Remember Me" is checked, set a longer session timeout
+                if (rememberMe)
+                {
+                    HttpContext.Session.SetString("RememberMe", "true");
+                    // Set session to last for 7 days
+                    HttpContext.Session.SetString("LoginTime", DateTime.UtcNow.ToString());
+                }
+                
+                return RedirectToAction("Admin");
             }
-            
-            return RedirectToAction("Admin");
-        }
 
-        TempData["Error"] = "Invalid credentials";
-        return RedirectToAction("Privacy");
+            TempData["Error"] = "Invalid credentials";
+            return RedirectToAction("Privacy");
+        }
+        catch (Exception ex)
+        {
+            TempData["Error"] = "An unexpected error occurred. Please try again.";
+            // Optionally log ex.Message
+            return RedirectToAction("Privacy");
+        }
     }
 
     // GET: /Admin/Admin (Dashboard)
