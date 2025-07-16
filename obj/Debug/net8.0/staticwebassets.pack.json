@@ -21,6 +21,14 @@
       "PackagePath": "staticwebassets/images/body.jpg"
     },
     {
+      "Id": "/Users/rashi/IIT/EAD/Hotel-Booking/wwwroot/images/chatbot.png",
+      "PackagePath": "staticwebassets/images/chatbot.png"
+    },
+    {
+      "Id": "/Users/rashi/IIT/EAD/Hotel-Booking/wwwroot/images/db.jpg",
+      "PackagePath": "staticwebassets/images/db.jpg"
+    },
+    {
       "Id": "/Users/rashi/IIT/EAD/Hotel-Booking/wwwroot/images/default.jpg",
       "PackagePath": "staticwebassets/images/default.jpg"
     },
@@ -35,6 +43,10 @@
     {
       "Id": "/Users/rashi/IIT/EAD/Hotel-Booking/wwwroot/images/logo.png",
       "PackagePath": "staticwebassets/images/logo.png"
+    },
+    {
+      "Id": "/Users/rashi/IIT/EAD/Hotel-Booking/wwwroot/images/nick.jpg",
+      "PackagePath": "staticwebassets/images/nick.jpg"
     },
     {
       "Id": "/Users/rashi/IIT/EAD/Hotel-Booking/wwwroot/images/standard.jpg",

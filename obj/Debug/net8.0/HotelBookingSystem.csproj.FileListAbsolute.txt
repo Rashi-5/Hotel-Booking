@@ -90,3 +90,4 @@
 /Users/rashi/IIT/EAD/Hotel-Booking/obj/Debug/net8.0/HotelBookingSystem.pdb
 /Users/rashi/IIT/EAD/Hotel-Booking/obj/Debug/net8.0/HotelBookingSystem.genruntimeconfig.cache
 /Users/rashi/IIT/EAD/Hotel-Booking/obj/Debug/net8.0/ref/HotelBookingSystem.dll
+/Users/rashi/IIT/EAD/Hotel-Booking/bin/Debug/net8.0/bookings.json

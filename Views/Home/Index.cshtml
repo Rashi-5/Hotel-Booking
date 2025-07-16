@@ -2,10 +2,62 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-<div>
-    <h1 class="display-4"> Dashboard </h1>
+<style>
+    body {
+    background-image: url('/images/db.jpg'); 
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: center center;
+        min-height: 100vh;
+    }
+</style>
+
+<div class="container mt-5 text-center">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+
+            <img src="/images/logo.png" alt="Hotel Logo" style="max-width: 120px;" class="mb-4" />
+
+            <h1 class="display-4 mb-3" style='color: black; font-weight: bold;'>Welcome to Your Personal Hotel Booking System</h1>
+            <p class="lead" style='color: black; font-weight: bold;'>Manage room availability, handle guest bookings, and generate reports — all from one place.</p>
+
+            <div class="row mt-5 g-4">
+                <div class="col-md-4">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title">🏨 Manage Rooms</h5>
+                            <p class="card-text">Add or update room types, amenities, and pricing.</p>
+                            <a href="/Admin/Pri" class="btn btn-outline-primary">Go</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title">📅 Book Now</h5>
+                            <p class="card-text">Make a new booking or view available rooms.</p>
+                            <a href="/User/Login" class="btn btn-outline-success">Book</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title">📈 View Reports</h5>
+                            <p class="card-text">Generate weekly or predictive booking reports.</p>
+                            <a href="/User/Login" class="btn btn-outline-warning">Reports</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-5">
+                <small class="text-muted">Need help? Ask the chat</small>
+                <br />
+                @await Html.PartialAsync("_ChatMessage", null)
+            </div>
+        </div>
     </div>
-
 </div>
-

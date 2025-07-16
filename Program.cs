@@ -3,7 +3,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-// ✅ Add session services
+// Add session services
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
 {
@@ -12,6 +12,8 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
     options.Cookie.MaxAge = TimeSpan.FromDays(7); // Cookie expires in 7 days
 });
+
+builder.Services.AddSingleton<ChatbotService>();
 
 var app = builder.Build();
 

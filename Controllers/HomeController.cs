@@ -2,7 +2,8 @@ using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using HotelBookingSystem.Models;
 using HotelBookingSystem.Models.Booking;
-using HotelBookingSystem.Controllers.Helper;
+using HotelBookingSystem.Helper;
+using HotelBookingSystem.Services;
 
 namespace HotelBookingSystem.Controllers;
 
@@ -163,6 +164,8 @@ public class HomeController : Controller
                 };
                 userBookings.Add(booking);
                 HttpContext.Session.SetObjectAsJson("UserBookings_" + username, userBookings);
+                // Add to singleton BookingService
+                BookingService.Instance.AddBooking(booking);
             }
             // --- End user association ---
 

@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using HotelBookingSystem.Models.Booking;
-using HotelBookingSystem.Controllers.Helper;
+using HotelBookingSystem.Helper;
+using HotelBookingSystem.Services;
 
 public class AdminController : Controller
 {
@@ -42,10 +43,10 @@ public class AdminController : Controller
     {
         try
         {
-            if (username == AdminUsername && password == AdminPassword)
+            var authService = new AuthService();
+            if (authService.ValidateAdmin(username, password))
             {
                 HttpContext.Session.SetString("IsAdminLoggedIn", "true");
-                
                 // If "Remember Me" is checked, set a longer session timeout
                 if (rememberMe)
                 {
@@ -53,10 +54,8 @@ public class AdminController : Controller
                     // Set session to last for 7 days
                     HttpContext.Session.SetString("LoginTime", DateTime.UtcNow.ToString());
                 }
-                
                 return RedirectToAction("Admin");
             }
-
             TempData["Error"] = "Invalid credentials";
             return RedirectToAction("Privacy");
         }
@@ -96,9 +95,8 @@ public class AdminController : Controller
             }
         }
 
-        // Get rooms from session or use default list
-        var rooms = HttpContext.Session.GetObjectFromJson<List<RoomCardViewModel>>("Rooms") ?? RoomDataHelper.GetDefaultRooms();
-
+        // Get rooms from RoomService
+        var rooms = RoomService.Instance.GetAllRooms();
         return View(rooms);
     }
 
@@ -118,101 +116,76 @@ public class AdminController : Controller
             return RedirectToAction("Admin");
         }
 
-        // Get current rooms from session or use default rooms if none exist
-        var rooms = HttpContext.Session.GetObjectFromJson<List<RoomCardViewModel>>("Rooms") ?? RoomDataHelper.GetDefaultRooms();
-        
+        var rooms = RoomService.Instance.GetAllRooms();
         if (isUpdate)
         {
             // Update existing room
             var roomToUpdate = rooms.FirstOrDefault(r => r.RoomName == originalRoomName);
-            
             if (roomToUpdate == null)
             {
                 TempData["Error"] = "Room type not found!";
                 return RedirectToAction("Admin");
             }
-
             // Check if new name conflicts with existing rooms (excluding current room)
             var conflictingRoom = rooms.FirstOrDefault(r => 
                 r.RoomName != originalRoomName && 
                 r.RoomName.Equals(roomType, StringComparison.OrdinalIgnoreCase));
-            
             if (conflictingRoom != null)
             {
                 TempData["Error"] = $"Room type '{roomType}' already exists!";
                 return RedirectToAction("Admin");
             }
-
             // Update the room
             roomToUpdate.RoomName = roomType;
             roomToUpdate.Description = roomDescription ?? roomToUpdate.Description;
             roomToUpdate.Amenities = amenities?.ToList() ?? roomToUpdate.Amenities;
             roomToUpdate.Price = priceValue.ToString("F2");
             roomToUpdate.NumberOfRooms = NumberOfRooms;
-
+            RoomService.Instance.UpdateRoom(roomToUpdate);
             TempData["Success"] = $"Room type '{originalRoomName}' updated successfully!";
         }
         else
         {
             // Create new room
-            // Check if room type already exists (case-insensitive)
             var existingRoom = rooms.FirstOrDefault(r => 
                 r.RoomName.Equals(roomType, StringComparison.OrdinalIgnoreCase));
-            
             if (existingRoom != null)
             {
                 TempData["Error"] = $"Room type '{roomType}' already exists! Please choose a different name.";
                 return RedirectToAction("Admin");
             }
-            
-            // Add new room with custom values
-            rooms.Add(new RoomCardViewModel
+            var newRoom = new RoomCardViewModel
             {
                 RoomName = roomType,
-                ImageUrl = "/images/default.jpg", 
+                ImageUrl = "/images/default.jpg",
                 Description = roomDescription ?? $"Comfortable {roomType} room.",
-                Amenities = amenities?.ToList() ?? new List<string> { "Wi-Fi", "TV" }, 
+                Amenities = amenities?.ToList() ?? new List<string> { "Wi-Fi", "TV" },
                 isDefault = false,
                 Price = priceValue.ToString("F2"),
                 NumberOfRooms = NumberOfRooms
-            });
-
+            };
+            RoomService.Instance.AddRoom(newRoom);
             TempData["Success"] = $"Room type '{roomType}' added successfully!";
         }
-
-        // Save back to session
-        HttpContext.Session.SetObjectAsJson("Rooms", rooms);
-
         return RedirectToAction("Admin");
     }
 
     [HttpPost]
     public IActionResult DeleteRoomType(string roomName)
     {
-        // Get current rooms from session
-        var rooms = HttpContext.Session.GetObjectFromJson<List<RoomCardViewModel>>("Rooms") ?? RoomDataHelper.GetDefaultRooms();
-        
-        // Find the room to delete
+        var rooms = RoomService.Instance.GetAllRooms();
         var roomToDelete = rooms.FirstOrDefault(r => r.RoomName == roomName);
-        
         if (roomToDelete == null)
         {
             TempData["Error"] = "Room type not found!";
             return RedirectToAction("Admin");
         }
-
-        // Prevent deletion of default rooms
         if (roomToDelete.isDefault)
         {
             TempData["Error"] = "Cannot delete default room types!";
             return RedirectToAction("Admin");
         }
-
-        rooms.Remove(roomToDelete);
-
-        // Save back to session
-        HttpContext.Session.SetObjectAsJson("Rooms", rooms);
-        
+        RoomService.Instance.DeleteRoom(roomName);
         TempData["Success"] = $"Room type '{roomName}' deleted successfully!";
         return RedirectToAction("Admin");
     }

@@ -3,6 +3,9 @@ using HotelBookingSystem.Models;
 using System.Collections.Generic;
 using System.Linq;
 using System;
+using HotelBookingSystem.Services;
+using System.IO;
+using System.Text.Json;
 
 public class UserController : Controller
 {
@@ -23,12 +26,12 @@ public class UserController : Controller
         {
             return View(model);
         }
-        if (Users.Any(u => u.Username == model.Username))
+        var authService = new AuthService();
+        if (!authService.RegisterUser(model, out string error))
         {
-            ModelState.AddModelError("Username", "Username already exists.");
+            ModelState.AddModelError("Username", error);
             return View(model);
         }
-        Users.Add(model);
         TempData["Success"] = "Registration successful! Please log in.";
         return RedirectToAction("Login");
     }
@@ -43,7 +46,8 @@ public class UserController : Controller
     [HttpPost]
     public IActionResult Login(string username, string password)
     {
-        var user = Users.FirstOrDefault(u => u.Username == username && u.Password == password);
+        var authService = new AuthService();
+        var user = authService.ValidateUser(username, password);
         if (user != null)
         {
             HttpContext.Session.SetString("IsUserLoggedIn", "true");
@@ -68,7 +72,7 @@ public class UserController : Controller
             TempData["Error"] = "You must be logged in to view your bookings.";
             return RedirectToAction("Login");
         }
-        var userBookings = HttpContext.Session.GetObjectFromJson<List<BookingFormModel>>("UserBookings_" + username) ?? new List<BookingFormModel>();
+        var userBookings = BookingService.Instance.GetBookingsByUser(username);
         return View(userBookings);
     }
 
@@ -81,17 +85,15 @@ public class UserController : Controller
             TempData["Error"] = "You must be logged in to delete a booking.";
             return RedirectToAction("Login");
         }
-        var userBookings = HttpContext.Session.GetObjectFromJson<List<BookingFormModel>>("UserBookings_" + username) ?? new List<BookingFormModel>();
-        var bookingToRemove = userBookings.FirstOrDefault(b => b.BookingId == bookingId);
-        if (bookingToRemove != null)
+        var bookingToRemove = BookingService.Instance.GetBookingById(bookingId);
+        if (bookingToRemove != null && bookingToRemove.Username == username)
         {
-            userBookings.Remove(bookingToRemove);
-            HttpContext.Session.SetObjectAsJson("UserBookings_" + username, userBookings);
+            BookingService.Instance.DeleteBooking(bookingId);
             TempData["Success"] = "Booking deleted successfully.";
         }
         else
         {
-            TempData["Error"] = "Booking not found.";
+            TempData["Error"] = "Booking not found or you do not have permission to delete it.";
         }
         return RedirectToAction("MyBookings");
     }
@@ -105,11 +107,10 @@ public class UserController : Controller
             TempData["Error"] = "You must be logged in to update a booking.";
             return RedirectToAction("Login");
         }
-        var userBookings = HttpContext.Session.GetObjectFromJson<List<BookingFormModel>>("UserBookings_" + username) ?? new List<BookingFormModel>();
-        var booking = userBookings.FirstOrDefault(b => b.BookingId == bookingId);
-        if (booking == null)
+        var booking = BookingService.Instance.GetBookingById(bookingId);
+        if (booking == null || booking.Username != username)
         {
-            TempData["Error"] = "Booking not found.";
+            TempData["Error"] = "Booking not found or you do not have permission to edit it.";
             return RedirectToAction("MyBookings");
         }
         return View(booking);
@@ -124,11 +125,10 @@ public class UserController : Controller
             TempData["Error"] = "You must be logged in to update a booking.";
             return RedirectToAction("Login");
         }
-        var userBookings = HttpContext.Session.GetObjectFromJson<List<BookingFormModel>>("UserBookings_" + username) ?? new List<BookingFormModel>();
-        var booking = userBookings.FirstOrDefault(b => b.BookingId == updatedBooking.BookingId);
-        if (booking == null)
+        var booking = BookingService.Instance.GetBookingById(updatedBooking.BookingId);
+        if (booking == null || booking.Username != username)
         {
-            TempData["Error"] = "Booking not found.";
+            TempData["Error"] = "Booking not found or you do not have permission to update it.";
             return RedirectToAction("MyBookings");
         }
         // Update allowed fields
@@ -138,7 +138,7 @@ public class UserController : Controller
         booking.NumberOfRooms = updatedBooking.NumberOfRooms;
         booking.RoomType = updatedBooking.RoomType;
         booking.TotalPrice = updatedBooking.TotalPrice;
-        HttpContext.Session.SetObjectAsJson("UserBookings_" + username, userBookings);
+        BookingService.Instance.UpdateBooking(booking);
         TempData["Success"] = "Booking updated successfully.";
         return RedirectToAction("MyBookings");
     }

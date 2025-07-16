@@ -29,7 +29,7 @@
   <label for="checkOut" class="form-label mb-0">Check-out Date</label>
   <input type="date" class="form-control" id="checkOut" name="checkOut" required style="width: 180px;" />
 
-  <button type="button" class="btn btn-info" onclick="checkAvailability()">Check Availability</button>
+  <button type="button" class="btn btn-info" style="border: none" onclick="checkAvailability()">Check Availability</button>
 </div>
 
 </div>
@@ -198,7 +198,11 @@
   </form>
 </div>
 </div>
+  <div class="mt-5">
+    @await Html.PartialAsync("_ChatMessage", null)
+  </div>
 </div>
+
 
 @section Scripts {
 <script>
@@ -422,4 +426,5 @@ document.getElementById('checkIn').addEventListener('change', updateRoomAvailabi
 document.getElementById('checkOut').addEventListener('change', updateRoomAvailabilities);
 document.getElementById('rooms').addEventListener('change', updateRoomAvailabilities);
 </script>
+
 }

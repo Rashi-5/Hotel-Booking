@@ -8,8 +8,25 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/HotelBookingSystem.styles.css" asp-append-version="true" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+      .btn, button, .btn-primary, .btn-success, .btn-warning, .btn-danger, .btn-outline-primary, .btn-outline-success, .btn-outline-warning, .btn-outline-danger {
+        background-color: #D1E7D0 !important;
+        border-color: #76695E !important;
+        color: #000 !important;
+      }
+      .btn-outline-primary, .btn-outline-success, .btn-outline-warning, .btn-outline-danger {
+        background-color: transparent !important;
+        color: #3C433D !important;
+        border-color: #76695E !important;
+      }
+      .btn:hover, button:hover, .btn-primary:hover, .btn-success:hover, .btn-warning:hover, .btn-danger:hover, .btn-outline-primary:hover, .btn-outline-success:hover, .btn-outline-warning:hover, .btn-outline-danger:hover {
+        background-color: #D1E7D0 !important;
+        border-color: #76695E !important;
+        color: #000 !important;
+      }
+    </style>
 </head>
-<body>
+<body style="background-color: #EFF0EF;">
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-green-cabin border-bottom box-shadow mb-3">
             <div class="container-fluid">
@@ -23,21 +40,21 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav ms-auto">
                         <li class="nav-item">
-                            <a class="nav-link nav-link-custom" asp-controller="Home" asp-action="Index">
-                                <i class="fas fa-home"> </i> Dashboard
-                            </a>
-                        </li>
-                        <li class="nav-item">
                             <a class="nav-link nav-link-custom" asp-controller="User" asp-action="Login">
                                 <i class="fas fa-sign-in-alt"></i> Login
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link nav-link-custom" asp-controller="User" asp-action="MyBookings">
-                                My Bookings <i class="fas fa-calendar-check"></i>
+                            <a class="nav-link nav-link-custom" asp-controller="Home" asp-action="Index">
+                                <i class="fas fa-home"> </i> Dashboard
                             </a>
                         </li>
                         <li class="nav-item">
+                            <a class="nav-link nav-link-custom" asp-controller="User" asp-action="MyBookings">
+                                <i class="fas fa-calendar-check"></i> My Bookings
+                            </a>
+                        </li>
+                        <li class="nav-item" style="margin-left: 2rem;">
                             <a class="nav-link nav-link-custom" asp-controller="Admin" asp-action="Privacy">
                                 Admin <i class="fas fa-user-shield"></i> 
                             </a>

@@ -1,6 +1,6 @@
 using HotelBookingSystem.Models.Booking;
 
-namespace HotelBookingSystem.Controllers.Helper
+namespace HotelBookingSystem.Helper
 {
     public static class RoomDataHelper
     {
