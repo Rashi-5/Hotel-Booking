@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "X4Gk1h8hjTA78So4/xOTCgaT60DSfR2Cdnmyh4Dphh0=",
+  "Hash": "cDuYTtF1ff0gW3Ln82KBAktvuEHzCswaJh1Z2V+SqlQ=",
   "Source": "HotelBookingSystem",
   "BasePath": "_content/HotelBookingSystem",
   "Mode": "Default",
@@ -91,6 +91,25 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot/favicon.ico"
+    },
+    {
+      "Identity": "/Users/rashi/IIT/EAD/Hotel-Booking/wwwroot/images/banner.jpg",
+      "SourceId": "HotelBookingSystem",
+      "SourceType": "Discovered",
+      "ContentRoot": "/Users/rashi/IIT/EAD/Hotel-Booking/wwwroot/",
+      "BasePath": "_content/HotelBookingSystem",
+      "RelativePath": "images/banner.jpg",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot/images/banner.jpg"
     },
     {
       "Identity": "/Users/rashi/IIT/EAD/Hotel-Booking/wwwroot/images/bg.jpg",
@@ -224,6 +243,25 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot/images/family.jpg"
+    },
+    {
+      "Identity": "/Users/rashi/IIT/EAD/Hotel-Booking/wwwroot/images/live-chat.png",
+      "SourceId": "HotelBookingSystem",
+      "SourceType": "Discovered",
+      "ContentRoot": "/Users/rashi/IIT/EAD/Hotel-Booking/wwwroot/",
+      "BasePath": "_content/HotelBookingSystem",
+      "RelativePath": "images/live-chat.png",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot/images/live-chat.png"
     },
     {
       "Identity": "/Users/rashi/IIT/EAD/Hotel-Booking/wwwroot/images/logo.png",

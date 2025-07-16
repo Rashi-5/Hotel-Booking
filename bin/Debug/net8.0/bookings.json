@@ -1,1 +1,3 @@
 {"BookingId":"dde2d640-ae4b-4226-aa11-b207d1ec9513","CustomerName":"admin","CheckInDate":"2025-07-17T00:00:00","CheckOutDate":"2025-07-17T00:00:00","Username":"admin","Note":null,"NumberOfRooms":1,"TotalPrice":149.99,"RoomType":"Standard Room"}
+{"BookingId":"0128baab-4f53-4319-b9ec-310b98cce637","CustomerName":"admin","CheckInDate":"2025-07-18T00:00:00","CheckOutDate":"2025-07-18T00:00:00","Username":"admin","Note":"ewq","NumberOfRooms":1,"TotalPrice":1799.94,"RoomType":"Deluxe Suite"}
+{"BookingId":"f0af1603-3ec2-46b3-b29f-40d6f8d1c9a2","CustomerName":"admin","CheckInDate":"2025-07-25T00:00:00","CheckOutDate":"2025-07-25T00:00:00","Username":"admin","Note":null,"NumberOfRooms":1,"TotalPrice":299.99,"RoomType":"Deluxe Suite"}

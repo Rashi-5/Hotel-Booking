@@ -19,7 +19,7 @@ namespace HotelBookingSystem.Services
 
         private BookingService()
         {
-            _bookings = BookingFileHelper.LoadBookingsFromFile(_bookingFilePath);
+            // _bookings = BookingFileHelper.LoadBookingsFromFile(_bookingFilePath); // Only ChatbotService should read from file
         }
 
         public void AddBooking(BookingFormModel booking)

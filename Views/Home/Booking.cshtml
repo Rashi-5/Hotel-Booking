@@ -18,25 +18,34 @@
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 }
+<div class="container my-5" style="background-image: url('/images/banner.jpg'); background-size: cover; background-position: center; width: 100%;  border-radius: 16px; box-shadow: 0 2px 16px rgba(0,0,0,0.08); position: relative; overflow: hidden;">
+    <div style="position: absolute; inset: 0; background: rgba(255, 255, 255, 0.18); z-index: 1;"></div>
+    <div style="position: relative; z-index: 2;">
+    <h1 class="mb-4 text-center fw-bold" style="color: #333;">Find your next stay...</h1>
+    
+    <div class="d-flex flex-wrap justify-content-center align-items-end gap-3 p-4 rounded shadow-sm" style="max-width: 800px; margin: auto; background: rgba(255, 255, 255, 0)">
+        <div class="form-group mb-0">
+            <label for="checkIn" class="form-label fw-semibold">Check-in</label>
+            <input type="date" class="form-control" id="checkIn" name="checkIn" required style="min-width: 180px;" />
+        </div>
 
-<div style='width: 100%;'>
-    <h1 class="container-fluid">Find your next stay.. </span> </h1>
-     <div style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
-<div style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
-  <label for="checkIn" class="form-label mb-0">Check-in Date</label>
-  <input type="date" class="form-control" id="checkIn" name="checkIn" required style="width: 180px;" />
+        <div class="form-group mb-0">
+            <label for="checkOut" class="form-label fw-semibold">Check-out</label>
+            <input type="date" class="form-control" id="checkOut" name="checkOut" required style="min-width: 180px;" />
+        </div>
 
-  <label for="checkOut" class="form-label mb-0">Check-out Date</label>
-  <input type="date" class="form-control" id="checkOut" name="checkOut" required style="width: 180px;" />
-
-  <button type="button" class="btn btn-info" style="border: none" onclick="checkAvailability()">Check Availability</button>
+        <div class="form-group mb-0">
+            <label class="invisible d-block">.</label> <!-- spacer -->
+            <button type="button" class="btn btn-info px-4 fw-semibold text-white" style="white-space: nowrap;" onclick="checkAvailability(); showBookingForm()">
+                Check Availability
+            </button>
+        </div>
+    </div>
 </div>
 
-</div>
 
     </div>
-    <div style="display: flex; flex-direction: row; ">
-    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; ">
+    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; ">
     @if (ViewBag.Rooms != null)
     {
         foreach (var room in ViewBag.Rooms as List<HotelBookingSystem.Models.Booking.RoomCardViewModel>)
@@ -45,7 +54,8 @@
         }
     }
     </div>
-  <div class="booking-form-container" style="width: -webkit-fill-available; margin: 12px; height: fit-content; background: #f9f9f9; padding: 20px; border-radius: 12px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
+
+  <div class="booking-form-container" id="bookingFormContainer" style="width: 60%; margin: 12px auto; height: fit-content; background: #f9f9f9; padding: 20px; border-radius: 12px; box-shadow: 0 0 10px rgba(0,0,0,0.1); display: none;">
   
   <form asp-action="SubmitBooking" method="post">
   <h2 style="text-align:center; margin-bottom: 20px;">Hotel Booking Details</h2>
@@ -194,9 +204,8 @@
     </div>
     <button type="submit" class="btn btn-success w-100">Book</button>
 
-    <div id="availabilityResult" style="margin-top:10px;"></div>
+    <!-- <div id="availabilityResult" style="margin-top:10px;"></div> -->
   </form>
-</div>
 </div>
   <div class="mt-5">
     @await Html.PartialAsync("_ChatMessage", null)
@@ -374,10 +383,12 @@ document.addEventListener('DOMContentLoaded', function () {
 function checkAvailability() {
     const checkIn = document.getElementById('checkIn').value;
     const checkOut = document.getElementById('checkOut').value;
-    const rooms = document.getElementById('rooms').value;
+    const rooms = document.getElementById('rooms') ? document.getElementById('rooms').value : 1;
+    const availabilityResult = document.getElementById('availabilityResult');
 
     if (!checkIn || !checkOut) {
-        document.getElementById('availabilityResult').innerText = "Please select check-in and check-out dates.";
+        availabilityResult.innerText = "Please select check-in and check-out dates.";
+        availabilityResult.style.color = 'red';
         return;
     }
 
@@ -385,15 +396,22 @@ function checkAvailability() {
         .then(response => response.json())
         .then(data => {
             let msg = '';
+            let anyAvailable = false;
             data.forEach(room => {
                 if (room.isAvailable) {
                     msg += `${room.roomName}: ${room.available} Available Rooms\n`;
+                    anyAvailable = true;
                 } else {
                     msg += `${room.roomName}: Not available for the selected dates\n`;
                 }
             });
-            document.getElementById('availabilityResult').innerText = msg;
-            document.getElementById('availabilityResult').style.color = 'green';
+            availabilityResult.innerText = msg;
+            availabilityResult.style.color = anyAvailable ? 'green' : 'red';
+            if (anyAvailable) {
+                showBookingForm();
+            } else {
+                document.getElementById('bookingFormContainer').style.display = 'none';
+            }
         });
 }
 </script>
@@ -425,6 +443,26 @@ function updateRoomAvailabilities() {
 document.getElementById('checkIn').addEventListener('change', updateRoomAvailabilities);
 document.getElementById('checkOut').addEventListener('change', updateRoomAvailabilities);
 document.getElementById('rooms').addEventListener('change', updateRoomAvailabilities);
+</script>
+
+<script>
+function showBookingForm() {
+    // Copy dates from top pickers to form pickers
+    var topCheckIn = document.getElementById('checkIn');
+    var topCheckOut = document.getElementById('checkOut');
+    var formCheckIn = document.querySelector('.booking-form-container input[name="checkIn"]');
+    var formCheckOut = document.querySelector('.booking-form-container input[name="checkOut"]');
+    if (topCheckIn && formCheckIn) {
+        formCheckIn.value = topCheckIn.value;
+        formCheckIn.setAttribute('min', topCheckIn.getAttribute('min'));
+    }
+    if (topCheckOut && formCheckOut) {
+        formCheckOut.value = topCheckOut.value;
+        formCheckOut.setAttribute('min', topCheckIn.value);
+    }
+    document.getElementById('bookingFormContainer').style.display = 'block';
+    document.getElementById('bookingFormContainer').scrollIntoView({ behavior: 'smooth' });
+}
 </script>
 
 }

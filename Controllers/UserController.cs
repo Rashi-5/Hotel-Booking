@@ -6,6 +6,10 @@ using System;
 using HotelBookingSystem.Services;
 using System.IO;
 using System.Text.Json;
+using HotelBookingSystem.Models.Booking;
+using QuestPDF.Fluent;
+using QuestPDF.Helpers;
+using QuestPDF.Infrastructure;
 
 public class UserController : Controller
 {
@@ -117,6 +121,18 @@ public class UserController : Controller
     }
 
     [HttpPost]
+    [ValidateAntiForgeryToken]
+    public IActionResult DownloadReport()
+    {
+        string username = HttpContext.Session.GetString("Username") ?? "Unknown User";
+        var bookings = HttpContext.Session.GetObjectFromJson<List<BookingFormModel>>("UserBookings_" + username) ?? new List<BookingFormModel>();
+
+        var pdfBytes = PdfReportHelper.GenerateBookingsReportPdf(bookings, username);
+
+        return File(pdfBytes, "application/pdf", "MyBookingsReport.pdf");
+    }
+
+    [HttpPost]
     public IActionResult EditBooking(BookingFormModel updatedBooking)
     {
         var username = HttpContext.Session.GetString("Username");
@@ -137,7 +153,6 @@ public class UserController : Controller
         booking.Note = updatedBooking.Note;
         booking.NumberOfRooms = updatedBooking.NumberOfRooms;
         booking.RoomType = updatedBooking.RoomType;
-        booking.TotalPrice = updatedBooking.TotalPrice;
         BookingService.Instance.UpdateBooking(booking);
         TempData["Success"] = "Booking updated successfully.";
         return RedirectToAction("MyBookings");

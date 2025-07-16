@@ -1,8 +1,9 @@
+using QuestPDF.Infrastructure;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
-
+QuestPDF.Settings.License = LicenseType.Community;
 // Add session services
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>

@@ -12,7 +12,7 @@
     </div>
 
     <!-- Chat Messages -->
-    <div id="chatMessages" style="padding: 12px; height: 250px; overflow-y: auto; background-color: #f8f9fa; flex-grow: 1;">
+    <div id="chatMessages" style="padding: 12px; height: 250px; overflow-y: auto; background-color: #f5faff; flex-grow: 1;">
         @if (Model != null)
         {
             if (!string.IsNullOrEmpty(Model.UserMessage))
@@ -31,7 +31,7 @@
     </div>
 
     <!-- Quick Select Dropdown -->
-    <div class="p-2 border-top" style="background-color: #f1f1f1;">
+    <div class="p-2 border-top" style="background-color: #f5faff;">
         <select id="quickQuestions" class="form-select">
             <option value="">Ask something quickly...</option>
             <option value="Check room availability">Check room availability</option>
@@ -44,7 +44,7 @@
     </div>
 
     <!-- Input Field (removed as per user request) -->
-    <form id="chatForm" class="d-flex border-top" style="padding: 8px; background-color: #fff;">
+    <form id="chatForm" class="d-flex border-top" style="padding: 8px; background-color:#f3fdf3;">
         <button type="submit" class="btn btn-primary">Send</button>
     </form>
 </div>
