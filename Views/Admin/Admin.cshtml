@@ -5,7 +5,7 @@
 
 <div style='display: flex; justify-content: space-between; padding: 0 24px'>
   <div>
-    <h2>Welcome!</h2>
+    <h2>Welcome !</h2>
     @if (Context.Session.GetString("RememberMe") == "true")
     {
         <small style="color: #28a745; font-style: italic;">
@@ -237,13 +237,100 @@
 
 <h3 style="font-size: 1.3rem; color: #2f4f4f; margin-bottom: 0.5rem; padding-left: 1.5rem;">Available Room Types:</h3>
 <ul style="padding-left: 1.5rem; list-style-type: disc;">
-<div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.2rem;">
+<div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem;">
 @foreach (var room in Model)
 {
     @await Html.PartialAsync("_RoomCard", room)
 }
 </div>
 </ul>
+
+@{
+    var allBookings = HotelBookingSystem.Services.BookingService.Instance.GetAllBookings();
+}
+
+<h3 style="font-size: 1.3rem; color: #2f4f4f; margin-bottom: 0.5rem; padding-left: 1.5rem;">Global Bookings:</h3>
+@if (allBookings != null && allBookings.Any())
+{
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>User</th>
+                <th>Check-In</th>
+                <th>Check-Out</th>
+                <th>Room Type</th>
+                <th>Number of Rooms</th>
+                <th>Total Price</th>
+                <th>Note</th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var booking in allBookings)
+        {
+            <tr>
+                <td>@booking.Username</td>
+                <td>@booking.CheckInDate.ToShortDateString()</td>
+                <td>@booking.CheckOutDate.ToShortDateString()</td>
+                <td>@booking.RoomType</td>
+                <td>@booking.NumberOfRooms</td>
+                <td>@booking.TotalPrice.ToString("F2")</td>
+                <td>@booking.Note</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+else
+{
+    <div class="alert alert-info">No bookings found.</div>
+}
+
+<div class="mb-3" style="display: flex; align-items: center; justify-items: center; gap: 1rem;">
+    <label for="reportWeek" class="form-label mb-0">Select Week:</label>
+    <input type="week" id="reportWeek" class="form-control" style="width: 200px;" />
+    <button type="button" class="btn btn-primary" onclick="downloadWeeklyReport()">Download Weekly PDF Report</button>
+    <form asp-action="DownloadGlobalReport" method="post" style="display:inline;">
+    <button type="submit" class="btn btn-primary mb-3">Download Global PDF Report</button>
+</form>
+</div>
+<script>
+function downloadWeeklyReport() {
+    const weekValue = document.getElementById('reportWeek').value;
+    if (!weekValue) {
+        alert('Please select a week.');
+        return;
+    }
+    // Convert week input (YYYY-Www) to a date (Monday of that week)
+    const [year, week] = weekValue.split('-W');
+    const firstDayOfYear = new Date(year, 0, 1);
+    const daysOffset = ((parseInt(week) - 1) * 7) + (firstDayOfYear.getDay() <= 4 ? 1 - firstDayOfYear.getDay() : 8 - firstDayOfYear.getDay());
+    const weekStart = new Date(year, 0, 1 + daysOffset);
+    const weekStartStr = weekStart.toISOString().split('T')[0];
+
+    fetch('/Admin/DownloadGlobalReport', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ weekStart: weekStartStr })
+    })
+    .then(response => {
+        if (!response.ok) throw new Error('Network response was not ok');
+        return response.blob();
+    })
+    .then(blob => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'WeeklyBookingsReport.pdf';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        window.URL.revokeObjectURL(url);
+    })
+    .catch(error => {
+        alert('Failed to download PDF: ' + error.message);
+    });
+}
+</script>
 
 <script>
 function checkRoomTypeExists() {

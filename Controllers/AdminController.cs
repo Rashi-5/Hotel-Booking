@@ -190,5 +190,25 @@ public class AdminController : Controller
         return RedirectToAction("Admin");
     }
 
+    [HttpPost]
+    public IActionResult DownloadGlobalReport([FromBody] WeekReportRequest request)
+    {
+        DateTime weekStart;
+        if (!DateTime.TryParse(request.WeekStart, out weekStart))
+            return BadRequest("Invalid week start date.");
+
+        var weekEnd = weekStart.AddDays(7);
+        var bookings = BookingService.Instance.GetAllBookings()
+            .Where(b => b.CheckInDate.Date >= weekStart.Date && b.CheckInDate.Date < weekEnd.Date)
+            .ToList();
+
+        var pdfBytes = PdfReportHelper.GenerateBookingsReportPdf(bookings, $"All Users (Week of {weekStart:yyyy-MM-dd})");
+        return File(pdfBytes, "application/pdf", "WeeklyBookingsReport.pdf");
+    }
+
+    public class WeekReportRequest
+    {
+        public string WeekStart { get; set; }
+    }
 }
 
