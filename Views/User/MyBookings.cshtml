@@ -32,6 +32,9 @@ else
                     <th>Special Request</th>
                     <th>Number of Rooms</th>
                     <th>Total Price ($)</th>
+                    <th>Guests</th>
+                    <th>Booking</th>
+                    <th>Days</th>
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -46,6 +49,9 @@ else
                     <td>@booking.Note</td>
                     <td>@booking.NumberOfRooms</td>
                     <td>@booking.TotalPrice.ToString("F2")</td>
+                    <td> Adult : @booking.Adult.ToString("F0") Children : @booking.Children.ToString("F0")</td>
+                    <td>@(booking.Frequency ?? booking.BookingType)</td>
+                    <td>@((booking.Days != null && booking.Days.Any()) ? string.Join(", ", booking.Days) : booking.BookingType)</td>
                     <td>
                         <div style="display: flex;">
                             <form asp-action="DeleteBooking" method="post" style="display:inline;">
@@ -108,4 +114,71 @@ function showEditBookingForm(bookingId) {
             document.getElementById('bookingFormContainer').scrollIntoView({ behavior: 'smooth' });
         });
 }
+
+function toggleRecurrence() {
+    var recurring = document.getElementById('isRecurring').checked;
+    document.getElementById('recurrenceOptions').style.display = recurring ? 'block' : 'none';
+    if (recurring && typeof updateRecurrenceUI === "function") {
+        updateRecurrenceUI();
+    }
+}
+
+function updateRecurrenceUI() {
+    const frequency = document.getElementById('frequency').value;
+    const interval = document.getElementById('interval').value;
+    const intervalLabel = document.getElementById('intervalLabel');
+    const weeklyOptions = document.getElementById('weeklyOptions');
+    const recurrenceSummary = document.getElementById('recurrenceSummary');
+    
+    // Update interval label
+    switch(frequency) {
+        case 'Daily':
+            intervalLabel.textContent = interval == 1 ? 'day' : 'days';
+            weeklyOptions.style.display = 'none';
+            break;
+        case 'Weekly':
+            intervalLabel.textContent = interval == 1 ? 'week' : 'weeks';
+            weeklyOptions.style.display = 'block';
+            break;
+        case 'Monthly':
+            intervalLabel.textContent = interval == 1 ? 'month' : 'months';
+            weeklyOptions.style.display = 'none';
+            break;
+    }
+    
+    // Update summary
+    let summary = `Book ${frequency.toLowerCase()}`;
+    if (interval > 1) {
+        summary += ` every ${interval} ${intervalLabel.textContent}`;
+    }
+    
+    if (frequency === 'Weekly' && weeklyOptions.style.display === 'block') {
+        const selectedDays = Array.from(document.querySelectorAll('input[name="days"]:checked'))
+            .map(cb => cb.value);
+        if (selectedDays.length > 0) {
+            summary += ` on ${selectedDays.join(', ')}`;
+        }
+    }
+    
+    summary += ' starting from check-in date';
+    recurrenceSummary.textContent = summary;
+}
+
+// Initialize the form when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    // Add event listeners for day checkboxes
+    const dayCheckboxes = document.querySelectorAll('input[name="days"]');
+    dayCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', updateRecurrenceUI);
+    });
+    
+    // Initialize recurrence display if recurring is already selected
+    if (document.getElementById('isRecurring').checked) {
+        toggleRecurrence();
+    }
+    
+    // Show the form container
+    document.getElementById('bookingFormContainer').style.display = 'block';
+});
+
 </script>

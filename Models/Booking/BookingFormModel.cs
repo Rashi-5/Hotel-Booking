@@ -17,16 +17,11 @@ public class BookingFormModel
     public int NumberOfRooms { get; set; }
     public decimal TotalPrice { get; set; }
     public string RoomType { get; set; }
-
-}
-
-public class RecurringBookingInput
-{
-    public string RoomType { get; set; }
-    public DateTime StartDate { get; set; }
-    public DateTime EndDate { get; set; }
-    public string RecurrenceFrequency { get; set; } 
-    public int Interval { get; set; } 
-    public List<DayOfWeek> DaysOfWeek { get; set; }
-    public string SpecialRequests { get; set; }
+    public int Adult {get; set;}
+    public int Children {get; set;}
+    public string BookingType { get; set; }
+    // Recurrence details
+    public string Frequency { get; set; } 
+    public int? Interval { get; set; }
+    public List<string> Days { get; set; } 
 }

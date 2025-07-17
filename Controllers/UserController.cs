@@ -111,12 +111,18 @@ public class UserController : Controller
             TempData["Error"] = "You must be logged in to update a booking.";
             return RedirectToAction("Login");
         }
+        
         var booking = BookingService.Instance.GetBookingById(bookingId);
         if (booking == null || booking.Username != username)
         {
             TempData["Error"] = "Booking not found or you do not have permission to edit it.";
             return RedirectToAction("MyBookings");
         }
+        
+        // Get rooms data same way as Booking() action
+        var rooms = RoomService.Instance.GetAllRooms();
+        ViewBag.Rooms = rooms;
+        
         return View(booking);
     }
 
@@ -129,15 +135,69 @@ public class UserController : Controller
             TempData["Error"] = "You must be logged in to update a booking.";
             return RedirectToAction("Login");
         }
+        
         var booking = BookingService.Instance.GetBookingById(bookingId);
+
         if (booking == null || booking.Username != username)
         {
             TempData["Error"] = "Booking not found or you do not have permission to edit it.";
             return RedirectToAction("MyBookings");
         }
-        // Set ViewBag.Rooms as needed for the dropdown
-        ViewBag.Rooms = HttpContext.Session.GetObjectFromJson<List<HotelBookingSystem.Models.Booking.RoomCardViewModel>>("Rooms");
+        
+        // Get rooms data same way as Booking() action
+        var rooms = RoomService.Instance.GetAllRooms();
+        ViewBag.Rooms = rooms;
+        Console.WriteLine($"[DEBUG] EditBookingPartial loaded with {rooms.Count} rooms");
+        
+        if (rooms != null && rooms.Any())
+        {
+            foreach (var room in rooms)
+            {
+                Console.WriteLine($"[DEBUG] Available room: {room.RoomName}");
+            }
+            Console.WriteLine($"[DEBUG] Looking for room: '{booking.RoomType}'");
+        }
+        
         return PartialView("_BookingForm", booking);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public IActionResult SubmitBooking(BookingFormModel model, string frequency, int? interval, string[] days)
+    {
+        var username = HttpContext.Session.GetString("Username");
+        if (string.IsNullOrEmpty(username))
+        {
+            TempData["Error"] = "You must be logged in to submit a booking.";
+            return RedirectToAction("Login");
+        }
+
+        // Validate model, update or create booking as needed
+        if (model.BookingId != Guid.Empty)
+        {
+            // Edit existing booking
+            var booking = BookingService.Instance.GetBookingById(model.BookingId);
+            if (booking == null || booking.Username != username)
+            {
+                TempData["Error"] = "Booking not found or you do not have permission to edit it.";
+                return RedirectToAction("MyBookings");
+            }
+            // Update booking fields here...
+            booking.CheckInDate = model.CheckInDate;
+            booking.CheckOutDate = model.CheckOutDate;
+            booking.RoomType = model.RoomType;
+            booking.NumberOfRooms = model.NumberOfRooms;
+            booking.Note = model.Note;
+            booking.Adult = model.Adult;
+            booking.Children = model.Children;
+            booking.BookingType = model.BookingType;
+            booking.Frequency = frequency;
+            booking.Interval = interval;
+            booking.Days = days?.ToList();
+            TempData["Success"] = "Booking updated successfully!";
+        }
+
+        return RedirectToAction("MyBookings");
     }
 
     [HttpPost]
@@ -152,29 +212,4 @@ public class UserController : Controller
         return File(pdfBytes, "application/pdf", "MyBookingsReport.pdf");
     }
 
-    [HttpPost]
-    public IActionResult EditBooking(BookingFormModel updatedBooking)
-    {
-        var username = HttpContext.Session.GetString("Username");
-        if (string.IsNullOrEmpty(username))
-        {
-            TempData["Error"] = "You must be logged in to update a booking.";
-            return RedirectToAction("Login");
-        }
-        var booking = BookingService.Instance.GetBookingById(updatedBooking.BookingId);
-        if (booking == null || booking.Username != username)
-        {
-            TempData["Error"] = "Booking not found or you do not have permission to update it.";
-            return RedirectToAction("MyBookings");
-        }
-        // Update allowed fields
-        booking.CheckInDate = updatedBooking.CheckInDate;
-        booking.CheckOutDate = updatedBooking.CheckOutDate;
-        booking.Note = updatedBooking.Note;
-        booking.NumberOfRooms = updatedBooking.NumberOfRooms;
-        booking.RoomType = updatedBooking.RoomType;
-        BookingService.Instance.UpdateBooking(booking);
-        TempData["Success"] = "Booking updated successfully.";
-        return RedirectToAction("MyBookings");
-    }
 }

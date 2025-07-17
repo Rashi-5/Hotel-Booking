@@ -5,6 +5,10 @@
       "PackagePath": "staticwebassets/HotelBookingSystem.bundle.scp.css"
     },
     {
+      "Id": "/Users/rashi/IIT/EAD/Hotel-Booking/wwwroot/booking.js",
+      "PackagePath": "staticwebassets/booking.js"
+    },
+    {
       "Id": "/Users/rashi/IIT/EAD/Hotel-Booking/wwwroot/css/site.css",
       "PackagePath": "staticwebassets/css/site.css"
     },

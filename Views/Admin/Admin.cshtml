@@ -5,7 +5,7 @@
 
 <div style='display: flex; justify-content: space-between; padding: 24px'>
   <div>
-    <h2>Welcome !</h2>
+    <h2>Welcome Admin!</h2>
     @if (Context.Session.GetString("RememberMe") == "true")
     {
         <small style="color: #28a745; font-style: italic;">
@@ -262,7 +262,10 @@
                 <th>Room Type</th>
                 <th>Number of Rooms</th>
                 <th>Total Price</th>
-                <th>Note</th>
+                <th>Special Request</th>
+                <th>Guests</th>
+                <th>Booking</th>
+                <th>Days</th>
             </tr>
         </thead>
         <tbody>
@@ -276,6 +279,9 @@
                 <td>@booking.NumberOfRooms</td>
                 <td>@booking.TotalPrice.ToString("F2")</td>
                 <td>@booking.Note</td>
+                <td> Adult : @booking.Adult.ToString("F0") Children : @booking.Children.ToString("F0")</td>
+                    <td>@(booking.Frequency ?? booking.BookingType)</td>
+                    <td>@((booking.Days != null && booking.Days.Any()) ? string.Join(", ", booking.Days) : booking.BookingType)</td>
             </tr>
         }
         </tbody>

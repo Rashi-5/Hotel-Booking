@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "kfvPHJkQEV1M6SaLCHBPV9dklubyb7lsU2aZxF/sJIg=",
+  "Hash": "0foPAsAW00guO0n+DSKze+BraJY3xrXPK8fqaB3PH34=",
   "Source": "HotelBookingSystem",
   "BasePath": "_content/HotelBookingSystem",
   "Mode": "Default",
@@ -53,6 +53,25 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "/Users/rashi/IIT/EAD/Hotel-Booking/obj/Debug/net8.0/scopedcss/projectbundle/HotelBookingSystem.bundle.scp.css"
+    },
+    {
+      "Identity": "/Users/rashi/IIT/EAD/Hotel-Booking/wwwroot/booking.js",
+      "SourceId": "HotelBookingSystem",
+      "SourceType": "Discovered",
+      "ContentRoot": "/Users/rashi/IIT/EAD/Hotel-Booking/wwwroot/",
+      "BasePath": "_content/HotelBookingSystem",
+      "RelativePath": "booking.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot/booking.js"
     },
     {
       "Identity": "/Users/rashi/IIT/EAD/Hotel-Booking/wwwroot/css/site.css",

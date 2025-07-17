@@ -160,15 +160,21 @@ public class HomeController : Controller
                     Note = note,
                     NumberOfRooms = rooms.Value,
                     TotalPrice = totalPrice,
-                    RoomType = roomType
+                    RoomType = roomType,
+                    Adult = adults ?? 0,
+                    Children = children ?? 0,
+                    BookingType = bookingType,
+                    Interval = interval ?? 0,
+                    Days = days?.ToList(),
+                    Frequency = frequency
+                    
                 };
                 userBookings.Add(booking);
                 HttpContext.Session.SetObjectAsJson("UserBookings_" + username, userBookings);
                 // Add to singleton BookingService
                 BookingService.Instance.AddBooking(booking);
             }
-            // --- End user association ---
-
+          
             _logger.LogInformation($"Booking submitted: {bookingDates.Count} dates, Room: {roomType}, Guests: {adults} adults, {children} children");
             TempData["Success"] = $"Booking submitted successfully! {bookingDates.Count} booking(s) created. {rooms.Value} room(s) deducted from '{roomType}'.";
             return RedirectToAction("Booking");

@@ -1,46 +1,78 @@
 @model BookingFormModel
 @{
-    var isEdit = Model != null && Model.BookingId != Guid.Empty;
+    var isEdit = false;
+    if (Model != null)
+    {
+        isEdit = Model.BookingId != Guid.Empty;
+        <text>
+            @* For debugging only: *@
+            <div class="alert alert-secondary">
+                DEBUG: Booking ID = @Model.BookingId <br />
+                CheckIn = @Model.CheckInDate <br />
+                CheckOut = @Model.CheckOutDate <br />
+                RoomType = @Model.RoomType <br />
+                Number of Rooms = @Model.NumberOfRooms <br />
+                Note = @Model.Note <br />
+                Adult = @Model.Adult <br />
+                Children = @Model.Children <br />
+                Frequency = @Model.Frequency <br />
+                Days = @(Model.Days != null ? string.Join(", ", Model.Days) : "") <br />
+            </div>
+        </text>
+    }
 }
+
 <div class="booking-form-container" id="bookingFormContainer" style="width: 60%; margin: 12px auto; height: fit-content; background: #f9f9f9; padding: 20px; border-radius: 12px; box-shadow: 0 0 10px rgba(0,0,0,0.1); display: none;">
   <form asp-action="SubmitBooking" method="post">
+  @if (isEdit)
+  {
+      <input type="hidden" name="BookingId" value="@Model.BookingId" />
+  }
   <h2 style="text-align:center; margin-bottom: 20px;">Hotel Booking Details</h2>
+    
     <!-- Dates -->
     <div class="form-group mb-3">
       <label for="checkIn">Check-in Date</label>
-      <input type="date" class="form-control" id="checkIn" name="checkIn" required />
+      <input type="date" class="form-control" id="checkIn" name="checkIn" required value="@(Model?.CheckInDate.ToString("yyyy-MM-dd") ?? "")" />
     </div>
 
     <div class="form-group mb-3">
       <label for="checkOut">Check-out Date</label>
-      <input type="date" class="form-control" id="checkOut" name="checkOut" required />
+      <input type="date" class="form-control" id="checkOut" name="checkOut" required value="@(Model?.CheckOutDate.ToString("yyyy-MM-dd") ?? "")" />
     </div>
 
     <!-- Guest Details -->
     <div class="form-group mb-3">
       <label>Guests</label>
       <div style="display: flex; gap: 10px;">
-        <input type="number" class="form-control" name="adults" placeholder="Adults" min="1" required />
-        <input type="number" class="form-control" name="children" placeholder="Children" min="0" />
+        <input type="number" class="form-control" name="Adult" placeholder="Adults" min="1" required value="@(Model?.Adult ?? 1)" />
+        <input type="number" class="form-control" name="Children" placeholder="Children" min="0" value="@(Model?.Children ?? 0)" />
       </div>
     </div>
 
     <!-- Number of Rooms -->
     <div class="form-group mb-3">
       <label for="rooms">Number of Rooms</label>
-      <input type="number" class="form-control" id="rooms" name="rooms" min="1" required />
+      <input type="number" class="form-control" id="rooms" name="NumberOfRooms" min="1" required value="@(Model?.NumberOfRooms ?? 1)" />
     </div>
 
     <!-- Room Type -->
     <div class="form-group mb-3">
       <label for="roomType">Room Type</label>
-      <select class="form-control" id="roomType" name="roomType" required>
+      <select class="form-control" id="roomType" name="RoomType" required>
         <option value="">-- Select Room Type --</option>
         @if (ViewBag.Rooms != null)
         {
             foreach (var room in ViewBag.Rooms as List<HotelBookingSystem.Models.Booking.RoomCardViewModel>)
             {
-                <option value="@room.RoomName">@room.RoomName</option>
+                if (Model?.RoomType == room.RoomName)
+                {
+                    <option value="@room.RoomName" selected="selected">@room.RoomName</option>
+                }
+                else
+                {
+                    <option value="@room.RoomName">@room.RoomName</option>
+                }
             }
         }
       </select>
@@ -49,7 +81,7 @@
     <!-- Special Request -->
      <div class="form-group mb-3">
        <label for="note">Special Request</label>
-       <textarea class="form-control" id="note" name="note" rows="3" placeholder="Any special requests or additional notes..."></textarea>
+       <textarea class="form-control" id="note" name="Note" rows="3" placeholder="Any special requests or additional notes...">@(Model?.Note ?? "")</textarea>
      </div>
 
     <!-- Booking Type -->
@@ -57,80 +89,55 @@
       <label>Booking Type</label>
       <div>
         <label class="me-3">
-          <input type="radio" name="bookingType" value="OneTime" checked /> One-time
+          <input type="radio" name="BookingType" value="OneTime" onchange="toggleRecurrence()" @(Model?.BookingType != "Recurring" ? "checked" : "") /> One-time
         </label>
         <label>
-          <input type="radio" name="bookingType" value="Recurring" id="isRecurring" onchange="toggleRecurrence()"/> Recurring
+          <input type="radio" name="BookingType" value="Recurring" id="isRecurring" onchange="toggleRecurrence()" @(Model?.BookingType == "Recurring" ? "checked" : "") /> Recurring
         </label>
       </div>
     </div>
 
-    <div id="recurrenceOptions" style="display:none;" class="border rounded p-3 bg-light">
+    <div id="recurrenceOptions" style="display:@(Model?.BookingType == "Recurring" ? "block" : "none");" class="border rounded p-3 bg-light">
       <h6 class="mb-3">Recurrence Settings</h6>
       
       <div class="row mb-3">
         <div class="col-md-6">
           <label for="frequency" class="form-label">Repeat</label>
           <select class="form-control" id="frequency" name="frequency" onchange="updateRecurrenceUI()">
-            <option value="Daily">Daily</option>
-            <option value="Weekly">Weekly</option>
-            <option value="Monthly">Monthly</option>
-          </select>
+            @foreach (var opt in new[] { "Daily", "Weekly", "Monthly" })
+            {
+                var selected = Model?.Frequency == opt ? "selected" : "";
+                <option value="@opt" @selected>@opt</option>
+            }
+        </select>
+
         </div>
         <div class="col-md-6">
           <label for="interval" class="form-label">Every</label>
           <div class="input-group">
-            <input type="number" class="form-control" id="interval" name="interval" min="1" value="1" onchange="updateRecurrenceUI()" />
+            <input type="number" class="form-control" id="interval" name="interval" min="1" value="@(Model?.Interval ?? 1)" onchange="updateRecurrenceUI()" />
             <span class="input-group-text" id="intervalLabel">day(s)</span>
           </div>
         </div>
       </div>
 
-      <div id="weeklyOptions" style="display:none;" class="mb-3">
+      <div id="weeklyOptions" style="display:@(Model?.Frequency == "Weekly" ? "block" : "none");" class="mb-3">
         <label class="form-label">Days of the Week</label>
         <div class="row">
-          <div class="col-md-3">
-            <div class="form-check">
-              <input class="form-check-input" type="checkbox" name="days" value="Monday" id="monday" />
-              <label class="form-check-label" for="monday">Monday</label>
-            </div>
-          </div>
-          <div class="col-md-3">
-            <div class="form-check">
-              <input class="form-check-input" type="checkbox" name="days" value="Tuesday" id="tuesday" />
-              <label class="form-check-label" for="tuesday">Tuesday</label>
-            </div>
-          </div>
-          <div class="col-md-3">
-            <div class="form-check">
-              <input class="form-check-input" type="checkbox" name="days" value="Wednesday" id="wednesday" />
-              <label class="form-check-label" for="wednesday">Wednesday</label>
-            </div>
-          </div>
-          <div class="col-md-3">
-            <div class="form-check">
-              <input class="form-check-input" type="checkbox" name="days" value="Thursday" id="thursday" />
-              <label class="form-check-label" for="thursday">Thursday</label>
-            </div>
-          </div>
-          <div class="col-md-3">
-            <div class="form-check">
-              <input class="form-check-input" type="checkbox" name="days" value="Friday" id="friday" />
-              <label class="form-check-label" for="friday">Friday</label>
-            </div>
-          </div>
-          <div class="col-md-3">
-            <div class="form-check">
-              <input class="form-check-input" type="checkbox" name="days" value="Saturday" id="saturday" />
-              <label class="form-check-label" for="saturday">Saturday</label>
-            </div>
-          </div>
-          <div class="col-md-3">
-            <div class="form-check">
-              <input class="form-check-input" type="checkbox" name="days" value="Sunday" id="sunday" />
-              <label class="form-check-label" for="sunday">Sunday</label>
-            </div>
-          </div>
+          @{
+            var daysOfWeek = new[] { "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday" };
+            var selectedDays = Model?.Days ?? new List<string>();
+            foreach (var day in daysOfWeek)
+            {
+                var isChecked = selectedDays.Contains(day) ? "checked" : "";
+                <div class="col-md-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="days" value="@day" id="@day.ToLower()" @isChecked />
+                        <label class="form-check-label" for="@day.ToLower()">@day</label>
+                    </div>
+                </div>
+            }
+        }
         </div>
       </div>
 
@@ -148,8 +155,7 @@
         </small>
       </div>
     </div>
+    
     <button type="submit" class="btn btn-success w-100">Book</button>
-
-    <!-- <div id="availabilityResult" style="margin-top:10px;"></div> -->
   </form>
-</div> 
+</div>
