@@ -5,6 +5,7 @@ using HotelBookingSystem.Services;
 
 public class AdminController : Controller
 {
+    
     private const string AdminUsername = "admin";
     private const string AdminPassword = "admin123";
 
@@ -115,7 +116,6 @@ public class AdminController : Controller
             TempData["Error"] = "Please enter a valid price between $1 and $10,000.";
             return RedirectToAction("Admin");
         }
-
         var rooms = RoomService.Instance.GetAllRooms();
         if (isUpdate)
         {
@@ -126,10 +126,11 @@ public class AdminController : Controller
                 TempData["Error"] = "Room type not found!";
                 return RedirectToAction("Admin");
             }
-            // Check if new name conflicts with existing rooms (excluding current room)
-            var conflictingRoom = rooms.FirstOrDefault(r => 
-                r.RoomName != originalRoomName && 
+
+            var conflictingRoom = rooms.FirstOrDefault(r =>
+                !r.RoomName.Equals(originalRoomName, StringComparison.OrdinalIgnoreCase) &&
                 r.RoomName.Equals(roomType, StringComparison.OrdinalIgnoreCase));
+           
             if (conflictingRoom != null)
             {
                 TempData["Error"] = $"Room type '{roomType}' already exists!";
@@ -139,9 +140,8 @@ public class AdminController : Controller
             roomToUpdate.RoomName = roomType;
             roomToUpdate.Description = roomDescription ?? roomToUpdate.Description;
             roomToUpdate.Amenities = amenities?.ToList() ?? roomToUpdate.Amenities;
-            roomToUpdate.Price = priceValue.ToString("F2");
+            roomToUpdate.Price = priceValue.ToString("F2") ?? roomToUpdate.Price;
             roomToUpdate.NumberOfRooms = NumberOfRooms;
-            RoomService.Instance.UpdateRoom(roomToUpdate);
             TempData["Success"] = $"Room type '{originalRoomName}' updated successfully!";
         }
         else

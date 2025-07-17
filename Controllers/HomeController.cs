@@ -29,7 +29,7 @@ public class HomeController : Controller
     public IActionResult Booking()
     {
         // Use the same room data source as AdminController
-        var rooms = HttpContext.Session.GetObjectFromJson<List<HotelBookingSystem.Models.Booking.RoomCardViewModel>>("Rooms") ?? RoomDataHelper.GetDefaultRooms();
+        var rooms = RoomService.Instance.GetAllRooms();
         ViewBag.Rooms = rooms;
         
         // Debug: Log the count of rooms
@@ -64,7 +64,7 @@ public class HomeController : Controller
             rooms ??= 1;
             interval ??= 1;
 
-            var allRooms = HttpContext.Session.GetObjectFromJson<List<RoomCardViewModel>>("Rooms") ?? RoomDataHelper.GetDefaultRooms();
+            var allRooms = RoomService.Instance.GetAllRooms();
             var selectedRoom = allRooms.FirstOrDefault(r => r.RoomName == roomType);
             if (selectedRoom == null)
             {
@@ -228,7 +228,7 @@ public class HomeController : Controller
         rooms ??= 1;
 
         // Get all rooms and per-date bookings
-        var allRooms = HttpContext.Session.GetObjectFromJson<List<RoomCardViewModel>>("Rooms") ?? RoomDataHelper.GetDefaultRooms();
+        var allRooms = RoomService.Instance.GetAllRooms();
         var selectedRoom = allRooms.FirstOrDefault(r => r.RoomName == roomType);
         if (selectedRoom == null)
             return Json(new { available = false, message = "Room type not found." });
@@ -263,7 +263,7 @@ public class HomeController : Controller
         var checkOutDate = DateTime.Parse(checkOut);
         rooms ??= 1;
 
-        var allRooms = HttpContext.Session.GetObjectFromJson<List<RoomCardViewModel>>("Rooms") ?? RoomDataHelper.GetDefaultRooms();
+        var allRooms = RoomService.Instance.GetAllRooms();
         var roomBookings = HttpContext.Session.GetObjectFromJson<Dictionary<string, Dictionary<DateTime, int>>>("RoomBookings")
             ?? new Dictionary<string, Dictionary<DateTime, int>>();
 

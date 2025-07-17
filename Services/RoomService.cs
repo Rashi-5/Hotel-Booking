@@ -43,19 +43,7 @@ namespace HotelBookingSystem.Services
                 _rooms.Add(room);
             }
         }
-
-        public void UpdateRoom(RoomCardViewModel updatedRoom)
-        {
-            lock (_lock)
-            {
-                var index = _rooms.FindIndex(r => r.RoomName == updatedRoom.RoomName);
-                if (index >= 0)
-                {
-                    _rooms[index] = updatedRoom;
-                }
-            }
-        }
-
+        
         public void DeleteRoom(string roomName)
         {
             lock (_lock)

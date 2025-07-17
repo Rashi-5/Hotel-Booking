@@ -6,7 +6,7 @@
   <div>
      @if (!Model.isDefault)
     {
-    <button type="button" class="btn btn-outline-warning btn-sm" onclick="openUpdateModal('@Model.RoomName', '@Model.Description', [@string.Join(",", Model.Amenities.Select(a => $"'{a}'"))])">
+    <button type="button" class="btn btn-outline-warning btn-sm" onclick="openUpdateModal('@Model.RoomName', '@Model.Description', [@string.Join(",", Model.Amenities.Select(a => $"'{a}'"))], '@Model.Price', '@Model.NumberOfRooms')">
       <i class="fas fa-edit me-1"></i>
     </button>
  
