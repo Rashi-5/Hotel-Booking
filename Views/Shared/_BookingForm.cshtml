@@ -53,7 +53,7 @@
     <!-- Number of Rooms -->
     <div class="form-group mb-3">
       <label for="rooms">Number of Rooms</label>
-      <input type="number" class="form-control" id="rooms" name="NumberOfRooms" min="1" required value="@(Model?.NumberOfRooms ?? 1)" />
+      <input type="number" class="form-control" id="rooms" name="rooms" min="1" required value="@(Model?.NumberOfRooms ?? 1)" />
     </div>
 
     <!-- Room Type -->
@@ -103,13 +103,12 @@
       <div class="row mb-3">
         <div class="col-md-6">
           <label for="frequency" class="form-label">Repeat</label>
-          <select class="form-control" id="frequency" name="frequency" onchange="updateRecurrenceUI()">
-            @foreach (var opt in new[] { "Daily", "Weekly", "Monthly" })
-            {
-                var selected = Model?.Frequency == opt ? "selected" : "";
-                <option value="@opt" @selected>@opt</option>
-            }
-        </select>
+            <select asp-for="Frequency" class="form-control" id="frequency" name="frequency" onchange="updateRecurrenceUI()">
+              <option value="">-- Select Frequency --</option>
+              <option value="Daily">Daily</option>
+              <option value="Weekly">Weekly</option>
+              <option value="Monthly">Monthly</option>
+          </select>
 
         </div>
         <div class="col-md-6">

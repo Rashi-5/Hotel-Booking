@@ -158,7 +158,7 @@ public class HomeController : Controller
                     CheckOutDate = checkInDate,
                     Username = username,
                     Note = note,
-                    NumberOfRooms = rooms.Value,
+                    NumberOfRooms = rooms ?? 0,
                     TotalPrice = totalPrice,
                     RoomType = roomType,
                     Adult = adults ?? 0,
