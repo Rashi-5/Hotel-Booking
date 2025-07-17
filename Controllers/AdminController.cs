@@ -45,8 +45,8 @@ public class AdminController : Controller
         {
             var authService = new AuthService();
             if (authService.ValidateAdmin(username, password))
-            {
-                HttpContext.Session.SetString("IsAdminLoggedIn", "true");
+        {
+            HttpContext.Session.SetString("IsAdminLoggedIn", "true");
                 // If "Remember Me" is checked, set a longer session timeout
                 if (rememberMe)
                 {
@@ -54,9 +54,9 @@ public class AdminController : Controller
                     // Set session to last for 7 days
                     HttpContext.Session.SetString("LoginTime", DateTime.UtcNow.ToString());
                 }
-                return RedirectToAction("Admin");
-            }
-            TempData["Error"] = "Invalid credentials";
+            return RedirectToAction("Admin");
+        }
+        TempData["Error"] = "Invalid credentials";
             return RedirectToAction("Privacy");
         }
         catch (Exception ex)
@@ -79,7 +79,7 @@ public class AdminController : Controller
         {
             return RedirectToAction("Privacy");
         }
-        
+
         // If "Remember Me" is active, check if login is still valid (7 days)
         if (rememberMe == "true" && !string.IsNullOrEmpty(loginTime))
         {
@@ -155,7 +155,7 @@ public class AdminController : Controller
                 return RedirectToAction("Admin");
             }
             var newRoom = new RoomCardViewModel
-            {
+        {
                 RoomName = roomType,
                 ImageUrl = "/images/default.jpg",
                 Description = roomDescription ?? $"Comfortable {roomType} room.",

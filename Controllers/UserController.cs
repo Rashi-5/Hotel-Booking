@@ -120,6 +120,26 @@ public class UserController : Controller
         return View(booking);
     }
 
+    [HttpGet]
+    public IActionResult EditBookingPartial(Guid bookingId)
+    {
+        var username = HttpContext.Session.GetString("Username");
+        if (string.IsNullOrEmpty(username))
+        {
+            TempData["Error"] = "You must be logged in to update a booking.";
+            return RedirectToAction("Login");
+        }
+        var booking = BookingService.Instance.GetBookingById(bookingId);
+        if (booking == null || booking.Username != username)
+        {
+            TempData["Error"] = "Booking not found or you do not have permission to edit it.";
+            return RedirectToAction("MyBookings");
+        }
+        // Set ViewBag.Rooms as needed for the dropdown
+        ViewBag.Rooms = HttpContext.Session.GetObjectFromJson<List<HotelBookingSystem.Models.Booking.RoomCardViewModel>>("Rooms");
+        return PartialView("_BookingForm", booking);
+    }
+
     [HttpPost]
     [ValidateAntiForgeryToken]
     public IActionResult DownloadReport()

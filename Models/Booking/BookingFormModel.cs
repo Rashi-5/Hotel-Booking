@@ -11,7 +11,6 @@ public class BookingFormModel
 
     [Required]
     public DateTime CheckOutDate { get; set; }
-
     public string Username { get; set; }
 
     public string Note { get; set; }

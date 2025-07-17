@@ -13,6 +13,10 @@
       "PackagePath": "staticwebassets/favicon.ico"
     },
     {
+      "Id": "/Users/rashi/IIT/EAD/Hotel-Booking/wwwroot/images/admin.jpg",
+      "PackagePath": "staticwebassets/images/admin.jpg"
+    },
+    {
       "Id": "/Users/rashi/IIT/EAD/Hotel-Booking/wwwroot/images/banner.jpg",
       "PackagePath": "staticwebassets/images/banner.jpg"
     },

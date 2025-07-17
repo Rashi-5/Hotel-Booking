@@ -21,10 +21,6 @@ body {
   margin-bottom: 60px;
 }
 
-h1 {
-  /* color: white; */
-}
-
 body {
   position: relative;
   margin: 0;
@@ -97,32 +93,27 @@ body::before {
 
 
 .register-page {
-  min-height: 100vh;
-  background: url('/images/body.jpg') no-repeat center center fixed;
+  max-height: 100vh;
   background-size: cover;
-  padding: 40px 0;
   overflow-y: auto;
   height: 100%;
 }
 
 .admin-page {
-  min-height: 100vh;
-  background: url('/images/bg.jpg') no-repeat center center fixed;
+  min-height: 90vh;
   background-size: cover;
-  padding: 40px 0;
   overflow-y: auto;
   height: 100%;
 }
 
 .register-title {
   text-align: center;
-  color: #fff;
-  margin-bottom: 20px;
-  margin-top: 12rem;
+  color: #3e3e3e;
+  margin: 4rem 0;
 }
 
 .register-form {
-  width: 60%;
+  width: 96%;
   margin: 0 auto;
   padding: 24px;
   background: rgba(255, 255, 255, 0.95);
@@ -130,8 +121,10 @@ body::before {
   box-shadow: 0 8px 24px rgba(0,0,0,0.2);
   font-family: Arial, sans-serif;
   display: flex;
+  height: auto;
   flex-direction: column;
   justify-items: center;
+  margin: 1rem;
 }
 
 .form-group {
@@ -166,5 +159,43 @@ button[type="submit"] {
   padding: 10px;
   border-radius: 12px;
   border: none;
-  background-color: #007bff;
+}
+
+.split-div{
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  height: 100vh;
+  background-color: aquamarine;
+}
+
+.side-div{
+  background-color: #D5E2EE;
+  height: 100%;
+  overflow: hidden;
+  width: 100%;
+}
+
+/* Custom table style */
+.table-custom {
+  background-color: rgba(255, 255, 255, 0.95);
+  border: 1px solid #dee2e6;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.05);
+}
+
+.table-custom th {
+  background-color: #f8f9fa;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.table-custom td {
+  vertical-align: middle;
+  text-align: center;
+}
+
+.table-custom tbody tr:hover {
+  background-color: #f1f1f1;
 }

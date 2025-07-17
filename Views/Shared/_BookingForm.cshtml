@@ -1,0 +1,155 @@
+@model BookingFormModel
+@{
+    var isEdit = Model != null && Model.BookingId != Guid.Empty;
+}
+<div class="booking-form-container" id="bookingFormContainer" style="width: 60%; margin: 12px auto; height: fit-content; background: #f9f9f9; padding: 20px; border-radius: 12px; box-shadow: 0 0 10px rgba(0,0,0,0.1); display: none;">
+  <form asp-action="SubmitBooking" method="post">
+  <h2 style="text-align:center; margin-bottom: 20px;">Hotel Booking Details</h2>
+    <!-- Dates -->
+    <div class="form-group mb-3">
+      <label for="checkIn">Check-in Date</label>
+      <input type="date" class="form-control" id="checkIn" name="checkIn" required />
+    </div>
+
+    <div class="form-group mb-3">
+      <label for="checkOut">Check-out Date</label>
+      <input type="date" class="form-control" id="checkOut" name="checkOut" required />
+    </div>
+
+    <!-- Guest Details -->
+    <div class="form-group mb-3">
+      <label>Guests</label>
+      <div style="display: flex; gap: 10px;">
+        <input type="number" class="form-control" name="adults" placeholder="Adults" min="1" required />
+        <input type="number" class="form-control" name="children" placeholder="Children" min="0" />
+      </div>
+    </div>
+
+    <!-- Number of Rooms -->
+    <div class="form-group mb-3">
+      <label for="rooms">Number of Rooms</label>
+      <input type="number" class="form-control" id="rooms" name="rooms" min="1" required />
+    </div>
+
+    <!-- Room Type -->
+    <div class="form-group mb-3">
+      <label for="roomType">Room Type</label>
+      <select class="form-control" id="roomType" name="roomType" required>
+        <option value="">-- Select Room Type --</option>
+        @if (ViewBag.Rooms != null)
+        {
+            foreach (var room in ViewBag.Rooms as List<HotelBookingSystem.Models.Booking.RoomCardViewModel>)
+            {
+                <option value="@room.RoomName">@room.RoomName</option>
+            }
+        }
+      </select>
+    </div>
+
+    <!-- Special Request -->
+     <div class="form-group mb-3">
+       <label for="note">Special Request</label>
+       <textarea class="form-control" id="note" name="note" rows="3" placeholder="Any special requests or additional notes..."></textarea>
+     </div>
+
+    <!-- Booking Type -->
+    <div class="form-group mb-4">
+      <label>Booking Type</label>
+      <div>
+        <label class="me-3">
+          <input type="radio" name="bookingType" value="OneTime" checked /> One-time
+        </label>
+        <label>
+          <input type="radio" name="bookingType" value="Recurring" id="isRecurring" onchange="toggleRecurrence()"/> Recurring
+        </label>
+      </div>
+    </div>
+
+    <div id="recurrenceOptions" style="display:none;" class="border rounded p-3 bg-light">
+      <h6 class="mb-3">Recurrence Settings</h6>
+      
+      <div class="row mb-3">
+        <div class="col-md-6">
+          <label for="frequency" class="form-label">Repeat</label>
+          <select class="form-control" id="frequency" name="frequency" onchange="updateRecurrenceUI()">
+            <option value="Daily">Daily</option>
+            <option value="Weekly">Weekly</option>
+            <option value="Monthly">Monthly</option>
+          </select>
+        </div>
+        <div class="col-md-6">
+          <label for="interval" class="form-label">Every</label>
+          <div class="input-group">
+            <input type="number" class="form-control" id="interval" name="interval" min="1" value="1" onchange="updateRecurrenceUI()" />
+            <span class="input-group-text" id="intervalLabel">day(s)</span>
+          </div>
+        </div>
+      </div>
+
+      <div id="weeklyOptions" style="display:none;" class="mb-3">
+        <label class="form-label">Days of the Week</label>
+        <div class="row">
+          <div class="col-md-3">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="days" value="Monday" id="monday" />
+              <label class="form-check-label" for="monday">Monday</label>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="days" value="Tuesday" id="tuesday" />
+              <label class="form-check-label" for="tuesday">Tuesday</label>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="days" value="Wednesday" id="wednesday" />
+              <label class="form-check-label" for="wednesday">Wednesday</label>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="days" value="Thursday" id="thursday" />
+              <label class="form-check-label" for="thursday">Thursday</label>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="days" value="Friday" id="friday" />
+              <label class="form-check-label" for="friday">Friday</label>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="days" value="Saturday" id="saturday" />
+              <label class="form-check-label" for="saturday">Saturday</label>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="days" value="Sunday" id="sunday" />
+              <label class="form-check-label" for="sunday">Sunday</label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <div class="alert alert-warning">
+          <small>
+            <strong>Note:</strong> Recurring bookings will end on the check-out date you selected above.
+          </small>
+        </div>
+      </div>
+
+      <div class="alert alert-info">
+        <small>
+          <strong>Summary:</strong> <span id="recurrenceSummary">Book daily starting from check-in date</span>
+        </small>
+      </div>
+    </div>
+    <button type="submit" class="btn btn-success w-100">Book</button>
+
+    <!-- <div id="availabilityResult" style="margin-top:10px;"></div> -->
+  </form>
+</div> 

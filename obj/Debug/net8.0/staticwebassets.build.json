@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "cDuYTtF1ff0gW3Ln82KBAktvuEHzCswaJh1Z2V+SqlQ=",
+  "Hash": "kfvPHJkQEV1M6SaLCHBPV9dklubyb7lsU2aZxF/sJIg=",
   "Source": "HotelBookingSystem",
   "BasePath": "_content/HotelBookingSystem",
   "Mode": "Default",
@@ -91,6 +91,25 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot/favicon.ico"
+    },
+    {
+      "Identity": "/Users/rashi/IIT/EAD/Hotel-Booking/wwwroot/images/admin.jpg",
+      "SourceId": "HotelBookingSystem",
+      "SourceType": "Discovered",
+      "ContentRoot": "/Users/rashi/IIT/EAD/Hotel-Booking/wwwroot/",
+      "BasePath": "_content/HotelBookingSystem",
+      "RelativePath": "images/admin.jpg",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot/images/admin.jpg"
     },
     {
       "Identity": "/Users/rashi/IIT/EAD/Hotel-Booking/wwwroot/images/banner.jpg",

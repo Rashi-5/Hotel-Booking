@@ -2,25 +2,32 @@
     ViewData["Title"] = "Admin Login";
 }
 <div class="admin-page">
-    <h2 class="register-title" style="color: black;">Admin Login</h2>
+    <div class="split-div">  
+    <div style="width: 100%">
+        <img src="/images/admin.jpg" alt="Hotel Logo" style="max-width: 100%; height: 100vh;" class="mb-4" />
+    </div> 
+    <div class="side-div">
+        <h2 class="register-title" style="color: black;">Admin Login</h2>
 
-    <form asp-action="Authenticate" method="post" class="register-form">
-        <div class="form-group">
-            <label>Username</label>
-            <input type="text" name="username" required />
-        </div>
-        <div class="form-group">
-            <label>Password</label>
-            <input type="password" name="password" required />
-        </div>
-        <div style="margin: 10px 0;">
-            <label>
-                <input type="checkbox" name="rememberMe" value="true" />
-                Remember Me (Stay logged in for 7 days)
-            </label>
-        </div>
-        <button type="submit">Login</button>
-    </form>
+        <form asp-action="Authenticate" method="post" class="register-form">
+            <div class="form-group">
+                <label>Username</label>
+                <input type="text" name="username" required />
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" name="password" required />
+            </div>
+            <div style="margin: 10px 0;">
+                <label>
+                    <input type="checkbox" name="rememberMe" value="true" />
+                    Remember Me (Stay logged in for 7 days)
+                </label>
+            </div>
+            <button type="submit">Login</button>
+        </form>
+     </div>
+    </div>
 </div>
 
 @if (TempData["Error"] != null)

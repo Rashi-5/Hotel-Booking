@@ -3,7 +3,7 @@
 }
 @model List<HotelBookingSystem.Models.Booking.RoomCardViewModel>
 
-<div style='display: flex; justify-content: space-between; padding: 0 24px'>
+<div style='display: flex; justify-content: space-between; padding: 24px'>
   <div>
     <h2>Welcome !</h2>
     @if (Context.Session.GetString("RememberMe") == "true")
@@ -252,7 +252,8 @@
 <h3 style="font-size: 1.3rem; color: #2f4f4f; margin-bottom: 0.5rem; padding-left: 1.5rem;">Global Bookings:</h3>
 @if (allBookings != null && allBookings.Any())
 {
-    <table class="table table-bordered">
+    <div class="table-responsive" style="margin: 1rem;">
+      <table class="table table-bordered table-custom">
         <thead>
             <tr>
                 <th>User</th>
@@ -278,20 +279,37 @@
             </tr>
         }
         </tbody>
-    </table>
+      </table>
+    </div>
 }
 else
 {
     <div class="alert alert-info">No bookings found.</div>
 }
 
-<div class="mb-3" style="display: flex; align-items: center; justify-items: center; gap: 1rem;">
-    <label for="reportWeek" class="form-label mb-0">Select Week:</label>
-    <input type="week" id="reportWeek" class="form-control" style="width: 200px;" />
-    <button type="button" class="btn btn-primary" onclick="downloadWeeklyReport()">Download Weekly PDF Report</button>
-    <form asp-action="DownloadGlobalReport" method="post" style="display:inline;">
-    <button type="submit" class="btn btn-primary mb-3">Download Global PDF Report</button>
-</form>
+<div class="mb-4 p-3 rounded shadow-sm"
+     style="display: flex; align-items: center; gap: 1rem; background-color: rgba(255, 255, 255, 0.95); border: 1px solid #ddd;">
+    
+    <label for="reportWeek" class="form-label mb-0" style="font-weight: 500;">📅 Select Week:</label>
+    
+    <input type="week" id="reportWeek" class="form-control" style="width: 200px; border-radius: 8px;" />
+    
+    <button type="button"
+            class="btn"
+            style="background-color: #007bff; color: white; border: none; border-radius: 8px; padding: 0.5rem 1rem;"
+            onclick="downloadWeeklyReport()">
+        📥 Weekly PDF
+    </button>
+
+    <form asp-action="DownloadGlobalReport" method="post" style="margin: 0;">
+        <button type="submit"
+                class="btn"
+                style="background-color: #6f42c1; color: white; border: none; border-radius: 8px; padding: 0.5rem 1rem;">
+            🌍 Global PDF
+        </button>
+    </form>
+</div>
+
 </div>
 <script>
 function downloadWeeklyReport() {
