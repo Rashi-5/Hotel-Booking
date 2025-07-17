@@ -1,10 +1,18 @@
 @model HotelBookingSystem.Models.Booking.RoomCardViewModel
+@using Microsoft.AspNetCore.Http
 
 <div class="room-card" data-room-name="@Model.RoomName" style="border: 1px solid #ccc; border-radius: 12px; padding: 1rem;  background-color: #D5E2EE; margin-top: 1rem; box-shadow: 0 2px 8px rgba(0,0,0,0.1); width: 400px; height: auto;">
  <div style='display: flex; flexDirection: row; justify-content: space-between;'>
   <h4 style="margin-bottom: 0.5rem; color: #2d4739;">@Model.RoomName</h4>
   <div>
-     @if (!Model.isDefault)
+     @{
+        var isAdmin = false;
+        if (Context != null && Context.Session != null)
+        {
+            isAdmin = Context.Session.GetString("IsAdminLoggedIn") == "true";
+        }
+     }
+     @if (!Model.isDefault && isAdmin)
     {
     <button type="button" class="btn btn-outline-warning btn-sm" onclick="openUpdateModal('@Model.RoomName', '@Model.Description', [@string.Join(",", Model.Amenities.Select(a => $"'{a}'"))], '@Model.Price', '@Model.NumberOfRooms')">
       <i class="fas fa-edit me-1"></i>
