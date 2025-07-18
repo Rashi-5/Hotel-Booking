@@ -1,26 +1,11 @@
 @model BookingFormModel
-<!-- @{
+@{
     var isEdit = false;
     if (Model != null)
     {
         isEdit = Model.BookingId != Guid.Empty;
-        <text>
-            @* For debugging only: *@
-            <div class="alert alert-secondary">
-                DEBUG: Booking ID = @Model.BookingId <br />
-                CheckIn = @Model.CheckIn <br />
-                CheckOut = @Model.CheckOut <br />
-                RoomType = @Model.RoomType <br />
-                Number of Rooms = @Model.NumberOfRooms <br />
-                Note = @Model.Note <br />
-                Adult = @Model.Adult <br />
-                Children = @Model.Children <br />
-                Frequency = @Model.Frequency <br />
-                Days = @(Model.Days != null ? string.Join(", ", Model.Days) : "") <br />
-            </div>
-        </text>
     }
-} -->
+}
 
 <div class="booking-form-container" id="bookingFormContainer" style="width: 60%; margin: 12px auto; height: fit-content; background: #f9f9f9; padding: 20px; border-radius: 12px; box-shadow: 0 0 10px rgba(0,0,0,0.1); display: none;">
   <form asp-action="SubmitBooking" method="post">

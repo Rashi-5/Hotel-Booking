@@ -100,23 +100,23 @@ document.addEventListener('DOMContentLoaded', function () {
   function toggleRecurrence() {
     const recurringRadio = document.getElementById("isRecurring");
     const options = document.getElementById("recurrenceOptions");
-    const checkIn = document.getElementById("checkIn").value;
-    const checkOut = document.getElementById("checkOut").value;
+    const checkInValue = document.getElementById("checkIn").value;
+    const checkOutValue = document.getElementById("checkOut").value;
 
     if (recurringRadio.checked) {
       // Validate check-out date
-      if (!checkIn || !checkOut) {
+      if (!checkInValue || !checkOutValue) {
         alert("Please select both check-in and check-out dates first.");
         recurringRadio.checked = false;
         return;
       }
 
-      const checkIn = new Date(checkIn);
-      const checkOut = new Date(checkOut);
+      const checkInDate = new Date(checkInValue);
+      const checkOutDate = new Date(checkOutValue);
       const today = new Date();
       
       // Calculate weeks until check-out
-      const weeksUntilCheckOut = Math.ceil((checkOut - today) / (1000 * 60 * 60 * 24 * 7));
+      const weeksUntilCheckOut = Math.ceil((checkOutDate - today) / (1000 * 60 * 60 * 24 * 7));
       
       // Set maximum recurrence interval based on check-out distance
       let maxInterval = 1;
