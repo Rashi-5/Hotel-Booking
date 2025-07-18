@@ -33,7 +33,7 @@ public class HomeController : Controller
         ViewBag.Rooms = rooms;
         
         // Debug: Log the count of rooms
-        _logger.LogInformation($"Booking page loaded with {rooms.Count} rooms");
+        // _logger.LogInformation($"Booking page loaded with {rooms.Count} rooms");
 
         return View();
     }
@@ -175,7 +175,7 @@ public class HomeController : Controller
                 BookingService.Instance.AddBooking(booking);
             }
           
-            _logger.LogInformation($"Booking submitted: {bookingDates.Count} dates, Room: {roomType}, Guests: {adults} adults, {children} children");
+            // _logger.LogInformation($"Booking submitted: {bookingDates.Count} dates, Room: {roomType}, Guests: {adults} adults, {children} children");
             TempData["Success"] = $"Booking submitted successfully! {bookingDates.Count} booking(s) created. {rooms} room(s) deducted from '{roomType}'.";
             return RedirectToAction("Booking");
         }

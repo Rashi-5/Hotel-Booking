@@ -4,12 +4,13 @@ using System.Linq;
 using HotelBookingSystem.Models.Booking;
 using System.IO;
 using System.Text.Json;
+using HotelBookingSystem.Services;
 
 public class ChatbotService
 {
     private readonly string _bookingFilePath = "bookings.json";
 
-    public List<BookingFormModel> GetAllBookings()
+    public List<BookingFormModel> GetAllBookingsFromFile()
     {
         var bookings = new List<BookingFormModel>();
         if (File.Exists(_bookingFilePath))
@@ -25,11 +26,17 @@ public class ChatbotService
                 }
                 catch
                 {
-                    // Could log the bad line for debugging
+                    return BookingService.Instance.GetAllBookings();
                 }
             }
         }
         return bookings;
+    }
+
+    public List<BookingFormModel> GetAllBookingsFromMemory()
+    {
+        // Use in-memory bookings from BookingService
+        return BookingService.Instance.GetAllBookings();
     }
 
     public string GetBotResponse(string userMessage)
@@ -62,7 +69,7 @@ public class ChatbotService
 
     private string GetPricingTrend()
     {
-        var bookings = GetAllBookings();
+        var bookings = GetAllBookingsFromFile();
 
         if (!bookings.Any())
             return "No booking data available to calculate pricing trends.";
@@ -97,7 +104,7 @@ public class ChatbotService
 
     private string GetWeeklyAvailability()
     {
-        var bookings = GetAllBookings();
+        var bookings = GetAllBookingsFromMemory();
         var today = DateTime.Today;
         var nextWeek = today.AddDays(7);
 
@@ -127,7 +134,7 @@ public class ChatbotService
 
     private string GenerateBookingSummary()
     {
-        var bookings = GetAllBookings();
+        var bookings = GetAllBookingsFromMemory();
         if (!bookings.Any())
             return "There are no bookings available right now.";
 
