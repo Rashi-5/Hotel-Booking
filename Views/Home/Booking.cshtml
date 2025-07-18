@@ -111,12 +111,12 @@ document.addEventListener('DOMContentLoaded', function () {
         return;
       }
 
-      const checkInDate = new Date(checkIn);
-      const checkOutDate = new Date(checkOut);
+      const checkIn = new Date(checkIn);
+      const checkOut = new Date(checkOut);
       const today = new Date();
       
       // Calculate weeks until check-out
-      const weeksUntilCheckOut = Math.ceil((checkOutDate - today) / (1000 * 60 * 60 * 24 * 7));
+      const weeksUntilCheckOut = Math.ceil((checkOut - today) / (1000 * 60 * 60 * 24 * 7));
       
       // Set maximum recurrence interval based on check-out distance
       let maxInterval = 1;
@@ -206,12 +206,12 @@ document.addEventListener('DOMContentLoaded', function () {
         return;
       }
 
-      const checkInDate = new Date(checkIn);
-      const checkOutDate = new Date(checkOut);
+      const checkIn = new Date(checkIn);
+      const checkOut = new Date(checkOut);
       const today = new Date();
       
       // Calculate weeks until check-out
-      const weeksUntilCheckOut = Math.ceil((checkOutDate - today) / (1000 * 60 * 60 * 24 * 7));
+      const weeksUntilCheckOut = Math.ceil((checkOut - today) / (1000 * 60 * 60 * 24 * 7));
       
       // Get current interval value
       const frequency = document.getElementById("frequency").value;
@@ -309,8 +309,8 @@ function showBookingForm() {
     // Copy dates from top pickers to form pickers
     var topCheckIn = document.getElementById('checkIn');
     var topCheckOut = document.getElementById('checkOut');
-    var formCheckIn = document.querySelector('.booking-form-container input[name="checkIn"]');
-    var formCheckOut = document.querySelector('.booking-form-container input[name="checkOut"]');
+    var formCheckIn = document.querySelector('.booking-form-container input[name="CheckIn"]');
+    var formCheckOut = document.querySelector('.booking-form-container input[name="CheckOut"]');
     if (topCheckIn && formCheckIn) {
         formCheckIn.value = topCheckIn.value;
         formCheckIn.setAttribute('min', topCheckIn.getAttribute('min'));

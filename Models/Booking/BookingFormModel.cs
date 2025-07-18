@@ -7,12 +7,12 @@ public class BookingFormModel
     public string CustomerName { get; set; }
 
     [Required]
-    public DateTime CheckInDate { get; set; }
+    public DateTime CheckIn { get; set; }
 
     [Required]
-    public DateTime CheckOutDate { get; set; }
-    public string Username { get; set; }
+    public DateTime CheckOut { get; set; }
 
+    public string Username { get; set; }
     public string Note { get; set; }
     public int NumberOfRooms { get; set; }
     public decimal TotalPrice { get; set; }

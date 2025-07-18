@@ -42,8 +42,8 @@ else
             @foreach (var booking in Model)
             {
                 <tr>
-                    <td>@booking.CheckInDate.ToShortDateString()</td>
-                    <td>@booking.CheckOutDate.ToShortDateString()</td>
+                    <td>@booking.CheckIn.ToShortDateString()</td>
+                    <td>@booking.CheckOut.ToShortDateString()</td>
                     <td>@booking.CustomerName</td>
                     <td>@booking.RoomType</td>
                     <td>@booking.Note</td>

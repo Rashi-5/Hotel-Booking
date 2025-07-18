@@ -183,8 +183,8 @@ public class UserController : Controller
                 return RedirectToAction("MyBookings");
             }
             // Update booking fields here...
-            booking.CheckInDate = model.CheckInDate;
-            booking.CheckOutDate = model.CheckOutDate;
+            booking.CheckIn = model.CheckIn;
+            booking.CheckOut = model.CheckOut;
             booking.RoomType = model.RoomType;
             booking.NumberOfRooms = model.NumberOfRooms;
             booking.Note = model.Note;

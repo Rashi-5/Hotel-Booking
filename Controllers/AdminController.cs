@@ -199,7 +199,7 @@ public class AdminController : Controller
 
         var weekEnd = weekStart.AddDays(7);
         var bookings = BookingService.Instance.GetAllBookings()
-            .Where(b => b.CheckInDate.Date >= weekStart.Date && b.CheckInDate.Date < weekEnd.Date)
+            .Where(b => b.CheckIn.Date >= weekStart.Date && b.CheckIn.Date < weekEnd.Date)
             .ToList();
 
         var pdfBytes = PdfReportHelper.GenerateBookingsReportPdf(bookings, $"All Users (Week of {weekStart:yyyy-MM-dd})");

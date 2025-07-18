@@ -154,8 +154,8 @@ public class HomeController : Controller
                 var booking = new BookingFormModel {
                     BookingId = Guid.NewGuid(), 
                     CustomerName = username,
-                    CheckInDate = checkInDate,
-                    CheckOutDate = checkInDate,
+                    CheckIn = checkInDate,
+                    CheckOut = checkInDate,
                     Username = username,
                     Note = note,
                     NumberOfRooms = rooms ?? 0,
@@ -176,7 +176,7 @@ public class HomeController : Controller
             }
           
             _logger.LogInformation($"Booking submitted: {bookingDates.Count} dates, Room: {roomType}, Guests: {adults} adults, {children} children");
-            TempData["Success"] = $"Booking submitted successfully! {bookingDates.Count} booking(s) created. {rooms.Value} room(s) deducted from '{roomType}'.";
+            TempData["Success"] = $"Booking submitted successfully! {bookingDates.Count} booking(s) created. {rooms} room(s) deducted from '{roomType}'.";
             return RedirectToAction("Booking");
         }
         catch (Exception ex)

@@ -69,7 +69,7 @@ public class ChatbotService
 
         // Group bookings by date and calculate average price per day
         var dailyPrices = bookings
-            .GroupBy(b => b.CheckInDate.Date)
+            .GroupBy(b => b.CheckIn.Date)
             .Select(g => new
             {
                 Date = g.Key,
@@ -109,7 +109,7 @@ public class ChatbotService
         {
             // Assuming each room type has 10 rooms
             int total = 10;
-            int booked = bookings.Count(b => b.CheckInDate.Date == date.Date);
+            int booked = bookings.Count(b => b.CheckIn.Date == date.Date);
             availability[date] = total - booked;
         }
 

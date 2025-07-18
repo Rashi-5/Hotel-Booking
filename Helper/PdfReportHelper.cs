@@ -37,8 +37,8 @@ public static class PdfReportHelper
 
                     foreach (var b in bookings)
                     {
-                        table.Cell().Text(b.CheckInDate.ToShortDateString());
-                        table.Cell().Text(b.CheckOutDate.ToShortDateString());
+                        table.Cell().Text(b.CheckIn.ToShortDateString());
+                        table.Cell().Text(b.CheckOut.ToShortDateString());
                         table.Cell().Text(b.RoomType);
                         table.Cell().Text(b.NumberOfRooms.ToString());
                         table.Cell().Text($"${b.TotalPrice:F2}");

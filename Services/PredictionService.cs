@@ -54,7 +54,7 @@ namespace HotelBookingSystem.Services
 
             foreach (var booking in allBookings)
             {
-                var date = booking.CheckInDate.Date;
+                var date = booking.CheckIn.Date;
                 if (!demand.ContainsKey(date))
                     demand[date] = 0;
 
@@ -81,7 +81,7 @@ namespace HotelBookingSystem.Services
 
             foreach (var booking in allBookings)
             {
-                var days = (booking.CheckOutDate - booking.CheckInDate).Days;
+                var days = (booking.CheckOut - booking.CheckIn).Days;
                 days = days == 0 ? 1 : days;
 
                 decimal pricePerRoom = booking.TotalPrice / (booking.NumberOfRooms * days);
