@@ -1,0 +1,145 @@
+@model BookingFormModel
+@{
+    var isEdit = false;
+    if (Model != null)
+    {
+        isEdit = Model.BookingId != Guid.Empty;
+    }
+}
+
+<div class="booking-form-container" id="bookingFormContainer" style="width: 60%; margin: 12px auto; height: fit-content; background: #f9f9f9; padding: 20px; border-radius: 12px; box-shadow: 0 0 10px rgba(0,0,0,0.1); display: none;">
+  <form asp-action="SubmitBooking" method="post">
+  @if (isEdit)
+  {
+      <input type="hidden" name="BookingId" value="@Model.BookingId" />
+  }
+  <h2 style="text-align:center; margin-bottom: 20px;">Hotel Booking Details</h2>
+    
+    <!-- Dates -->
+    <div class="form-group mb-3">
+      <label for="checkIn">Check-in Date</label>
+      <input type="date" class="form-control" id="checkIn" name="CheckIn" required value="@(Model?.CheckIn.ToString("yyyy-MM-dd") ?? "")" />
+    </div>
+
+    <div class="form-group mb-3">
+      <label for="checkOut">Check-out Date</label>
+      <input type="date" class="form-control" id="checkOut" name="CheckOut" required value="@(Model?.CheckOut.ToString("yyyy-MM-dd") ?? "")" />
+    </div>
+
+    <!-- Guest Details -->
+    <div class="form-group mb-3">
+      <label>Guests</label>
+      <div style="display: flex; gap: 10px;">
+        <input type="number" class="form-control" name="Adult" placeholder="Adults" min="1" required value="@(Model?.Adult ?? 1)" />
+        <input type="number" class="form-control" name="Children" placeholder="Children" min="0" value="@(Model?.Children ?? 0)" />
+      </div>
+    </div>
+
+    <!-- Number of Rooms -->
+    <div class="form-group mb-3">
+      <label for="rooms">Number of Rooms</label>
+      <input type="number" class="form-control" id="rooms" name="rooms" min="1" required value="@(Model?.NumberOfRooms ?? 1)" />
+    </div>
+
+    <!-- Room Type -->
+    <div class="form-group mb-3">
+      <label for="roomType">Room Type</label>
+      <select class="form-control" id="roomType" name="RoomType" required>
+        <option value="">-- Select Room Type --</option>
+        @if (ViewBag.Rooms != null)
+        {
+            foreach (var room in ViewBag.Rooms as List<HotelBookingSystem.Models.Booking.RoomCardViewModel>)
+            {
+                if (Model?.RoomType == room.RoomName)
+                {
+                    <option value="@room.RoomName" selected="selected">@room.RoomName</option>
+                }
+                else
+                {
+                    <option value="@room.RoomName">@room.RoomName</option>
+                }
+            }
+        }
+      </select>
+    </div>
+
+    <!-- Special Request -->
+     <div class="form-group mb-3">
+       <label for="note">Special Request</label>
+       <textarea class="form-control" id="note" name="Note" rows="3" placeholder="Any special requests or additional notes...">@(Model?.Note ?? "")</textarea>
+     </div>
+
+    <!-- Booking Type -->
+    <div class="form-group mb-4">
+      <label>Booking Type</label>
+      <div>
+        <label class="me-3">
+          <input type="radio" name="BookingType" value="OneTime" onchange="toggleRecurrence()" @(Model?.BookingType != "Recurring" ? "checked" : "") /> One-time
+        </label>
+        <label>
+          <input type="radio" name="BookingType" value="Recurring" id="isRecurring" onchange="toggleRecurrence()" @(Model?.BookingType == "Recurring" ? "checked" : "") /> Recurring
+        </label>
+      </div>
+    </div>
+
+    <div id="recurrenceOptions" style="display:@(Model?.BookingType == "Recurring" ? "block" : "none");" class="border rounded p-3 bg-light">
+      <h6 class="mb-3">Recurrence Settings</h6>
+      
+      <div class="row mb-3">
+        <div class="col-md-6">
+          <label for="frequency" class="form-label">Repeat</label>
+            <select asp-for="Frequency" class="form-control" id="frequency" name="frequency" onchange="updateRecurrenceUI()">
+              <option value="">-- Select Frequency --</option>
+              <option value="Daily">Daily</option>
+              <option value="Weekly">Weekly</option>
+              <option value="Monthly">Monthly</option>
+          </select>
+
+        </div>
+        <div class="col-md-6">
+          <label for="interval" class="form-label">Every</label>
+          <div class="input-group">
+            <input type="number" class="form-control" id="interval" name="interval" min="1" value="@(Model?.Interval ?? 1)" onchange="updateRecurrenceUI()" />
+            <span class="input-group-text" id="intervalLabel">day(s)</span>
+          </div>
+        </div>
+      </div>
+
+      <div id="weeklyOptions" style="display:@(Model?.Frequency == "Weekly" ? "block" : "none");" class="mb-3">
+        <label class="form-label">Days of the Week</label>
+        <div class="row">
+          @{
+            var daysOfWeek = new[] { "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday" };
+            var selectedDays = Model?.Days ?? new List<string>();
+            foreach (var day in daysOfWeek)
+            {
+                var isChecked = selectedDays.Contains(day) ? "checked" : "";
+                <div class="col-md-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="days" value="@day" id="@day.ToLower()" @isChecked />
+                        <label class="form-check-label" for="@day.ToLower()">@day</label>
+                    </div>
+                </div>
+            }
+        }
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <div class="alert alert-warning">
+          <small>
+            <strong>Note:</strong> Recurring bookings will end on the check-out date you selected above.
+          </small>
+        </div>
+      </div>
+
+      <div class="alert alert-info">
+        <small>
+          <strong>Summary:</strong> <span id="recurrenceSummary">Book daily starting from check-in date</span>
+        </small>
+      </div>
+    </div>
+    
+    <button type="submit" class="btn btn-success w-100">Book</button>
+  </form>
+</div>

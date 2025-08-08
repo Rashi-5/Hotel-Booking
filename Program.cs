@@ -1,16 +1,20 @@
+using QuestPDF.Infrastructure;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
-
-// ✅ Add session services
+QuestPDF.Settings.License = LicenseType.Community;
+// Add session services
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
 {
-    options.IdleTimeout = TimeSpan.FromMinutes(20); // how long session lives
+    options.IdleTimeout = TimeSpan.FromHours(8); // Extended to 8 hours
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
+    options.Cookie.MaxAge = TimeSpan.FromDays(7); // Cookie expires in 7 days
 });
+
+builder.Services.AddSingleton<ChatbotService>();
 
 var app = builder.Build();
 

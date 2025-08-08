@@ -2,78 +2,75 @@
     ViewData["Title"] = "Booking";
 }
 
-<div class="text-center">
-<div  style='background: #46765a; width: 100%;'>
-    <h1 class="display-4">Welcome to <br/> <span> Mandala Royal Resort </span> </h1>
+<div>
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @TempData["Success"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
-   <div class="booking-form-container" style="max-width: 600px; margin: auto; background: #f9f9f9; padding: 20px; border-radius: 12px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
-  <h2 style="text-align:center; margin-bottom: 20px;">Hotel Booking Details</h2>
-  <form>
-    <!-- Dates -->
-    <div class="form-group mb-3">
-      <label for="checkIn">Check-in Date</label>
-      <input type="date" class="form-control" id="checkIn" name="checkIn" required />
-    </div>
+}
 
-    <div class="form-group mb-3">
-      <label for="checkOut">Check-out Date</label>
-      <input type="date" class="form-control" id="checkOut" name="checkOut" required />
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @TempData["Error"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
+}
+<div class="my-5" style="background-image: url('/images/banner.jpg'); background-size: cover; background-position: center; width: 100vw; margin: 0; box-shadow: 0 2px 16px rgba(0,0,0,0.08); position: relative; overflow: hidden;">
+    <div style="position: absolute; inset: 0; z-index: 1;"></div>
+    <div style="position: relative; z-index: 2;">
+    <h1 class="fw-bold" style="color: #333; margin-left: 1rem;">Find your next stay...</h1>
+    <span style="color: #333; margin-left: 1rem;"> Check Availability to contibue booking..</span>
+    <div class="d-flex flex-wrap justify-content-center align-items-end gap-3 p-4 rounded shadow-sm" style="max-width: 100%; margin: auto;">
+        <div class="form-group mb-0">
+            <label for="checkIn" class="form-label fw-semibold">Check-in</label>
+            <input type="date" class="form-control" id="checkIn" name="checkIn" required style="min-width: 180px;" />
+        </div>
 
-    <!-- Location -->
-    <div class="form-group mb-3">
-      <label for="place">Place</label>
-      <input type="text" class="form-control" id="place" name="place" placeholder="City or Hotel Location" required />
+        <div class="form-group mb-0">
+            <label for="checkOut" class="form-label fw-semibold">Check-out</label>
+            <input type="date" class="form-control" id="checkOut" name="checkOut" required style="min-width: 180px;" />
+        </div>
+
+        <div class="form-group mb-0">
+            <label class="invisible d-block">.</label> <!-- spacer -->
+            <button type="button" class="btn btn-info px-4 fw-semibold text-white" style="white-space: nowrap;" onclick="checkAvailability(); showBookingForm()">
+                Check Availability
+            </button>
+        </div>
+        
+        <div style="display: flex; justify-content: flex-end; margin-left: auto;">
+          <form asp-controller="User" asp-action="Logout" method="post" style="display:inline;">
+               <button type="submit"
+                class="btn"
+                style="border: none; padding: 0.5rem 1.2rem; border-radius: 4px; font-weight: 500; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);">
+                  🔒 Logout
+              </button>
+          </form>
+        </div>
     </div>
+</div>
 
-    <!-- Guest Details -->
-    <div class="form-group mb-3">
-      <label>Guests</label>
-      <div style="display: flex; gap: 10px;">
-        <input type="number" class="form-control" name="adults" placeholder="Adults" min="1" required />
-        <input type="number" class="form-control" name="children" placeholder="Children" min="0" />
-      </div>
+
     </div>
-
-    <!-- Number of Rooms -->
-    <div class="form-group mb-3">
-      <label for="rooms">Number of Rooms</label>
-      <input type="number" class="form-control" id="rooms" name="rooms" min="1" required />
-    </div>
-
-    <!-- Room Type -->
-    <div class="form-group mb-3">
-      <label for="roomType">Room Type</label>
-      <select class="form-control" id="roomType" name="roomType" required>
-        <option value="">-- Select Room Type --</option>
-        @if (ViewBag.Rooms != null)
+    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; ">
+    @if (ViewBag.Rooms != null)
+    {
+        foreach (var room in ViewBag.Rooms as List<HotelBookingSystem.Models.Booking.RoomCardViewModel>)
         {
-            foreach (var room in ViewBag.Rooms as List<HotelBookingSystem.Models.Booking.RoomCardViewModel>)
-            {
-                <option value="@room.RoomName">@room.RoomName</option>
-            }
+            @await Html.PartialAsync("_RoomCard", room)
         }
-      </select>
+    }
     </div>
 
-    <!-- Booking Type -->
-    <div class="form-group mb-4">
-      <label>Booking Type</label>
-      <div>
-        <label class="me-3">
-          <input type="radio" name="bookingType" value="OneTime" checked /> One-time
-        </label>
-        <label>
-          <input type="radio" name="bookingType" value="Recurring" /> Recurring
-        </label>
-      </div>
-    </div>
-
-    <button type="submit" class="btn btn-success w-100">Book Now</button>
-  </form>
+  @await Html.PartialAsync("_BookingForm")
+  <div class="mt-5">
+    @await Html.PartialAsync("_ChatMessage", null)
+  </div>
 </div>
 
-</div>
 
 @section Scripts {
 <script>
@@ -98,4 +95,233 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 </script>
+
+<script>
+  function toggleRecurrence() {
+    const recurringRadio = document.getElementById("isRecurring");
+    const options = document.getElementById("recurrenceOptions");
+    const checkInValue = document.getElementById("checkIn").value;
+    const checkOutValue = document.getElementById("checkOut").value;
+
+    if (recurringRadio.checked) {
+      // Validate check-out date
+      if (!checkInValue || !checkOutValue) {
+        alert("Please select both check-in and check-out dates first.");
+        recurringRadio.checked = false;
+        return;
+      }
+
+      const checkInDate = new Date(checkInValue);
+      const checkOutDate = new Date(checkOutValue);
+      const today = new Date();
+      
+      // Calculate weeks until check-out
+      const weeksUntilCheckOut = Math.ceil((checkOutDate - today) / (1000 * 60 * 60 * 24 * 7));
+      
+      // Set maximum recurrence interval based on check-out distance
+      let maxInterval = 1;
+      if (weeksUntilCheckOut <= 2) {
+        maxInterval = 3; // If check-out is within 2 weeks, max interval is 3 weeks
+      } else if (weeksUntilCheckOut <= 4) {
+        maxInterval = 2; // If check-out is within 4 weeks, max interval is 2 weeks
+      } else {
+        maxInterval = 1; // Otherwise, max interval is 1 week
+      }
+
+      // Store the max interval for use in updateRecurrenceUI
+      document.getElementById("recurrenceOptions").setAttribute("data-max-interval", maxInterval);
+
+      options.style.display = "block";
+      updateRecurrenceUI();
+    } else {
+      options.style.display = "none";
+    }
+  }
+
+  function updateRecurrenceUI() {
+    const frequency = document.getElementById("frequency").value;
+    const interval = document.getElementById("interval");
+    const intervalValue = parseInt(interval.value);
+    const weeklyOptions = document.getElementById("weeklyOptions");
+    const intervalLabel = document.getElementById("intervalLabel");
+    const summary = document.getElementById("recurrenceSummary");
+    
+    // Get max interval from stored data
+    const maxInterval = parseInt(document.getElementById("recurrenceOptions").getAttribute("data-max-interval") || "1");
+    
+    // Validate interval based on frequency and max allowed
+    if (frequency === "Weekly" && intervalValue > maxInterval) {
+      alert(`For your selected check-out date, the maximum recurrence interval is ${maxInterval} week(s).`);
+      interval.value = maxInterval;
+      intervalValue = maxInterval;
+    }
+    
+    // Update interval label based on frequency
+    switch(frequency) {
+      case "Daily":
+        intervalLabel.textContent = "day(s)";
+        weeklyOptions.style.display = "none";
+        break;
+      case "Weekly":
+        intervalLabel.textContent = "week(s)";
+        weeklyOptions.style.display = "block";
+        // Set max attribute for weekly intervals
+        interval.setAttribute("max", maxInterval);
+        break;
+      case "Monthly":
+        intervalLabel.textContent = "month(s)";
+        weeklyOptions.style.display = "none";
+        break;
+    }
+    
+    // Update summary
+    let summaryText = `Book ${frequency.toLowerCase()} every ${intervalValue} `;
+    if (frequency === "Daily") {
+      summaryText += intervalValue === 1 ? "day" : "days";
+    } else if (frequency === "Weekly") {
+      summaryText += intervalValue === 1 ? "week" : "weeks";
+    } else if (frequency === "Monthly") {
+      summaryText += intervalValue === 1 ? "month" : "months";
+    }
+    
+    summaryText += " starting from check-in date until check-out date";
+    summary.textContent = summaryText;
+  }
+
+    // Initialize recurrence UI when page loads
+  document.addEventListener('DOMContentLoaded', function() {
+    updateRecurrenceUI();
+  });
+
+  // Form validation
+  document.querySelector('form').addEventListener('submit', function(e) {
+    const recurringRadio = document.getElementById("isRecurring");
+    const checkIn = document.getElementById("checkIn").value;
+    const checkOut = document.getElementById("checkOut").value;
+
+    if (recurringRadio.checked) {
+      if (!checkIn || !checkOut) {
+        e.preventDefault();
+        alert("Please select both check-in and check-out dates for recurring bookings.");
+        return;
+      }
+
+      const checkIn = new Date(checkIn);
+      const checkOut = new Date(checkOut);
+      const today = new Date();
+      
+      // Calculate weeks until check-out
+      const weeksUntilCheckOut = Math.ceil((checkOut - today) / (1000 * 60 * 60 * 24 * 7));
+      
+      // Get current interval value
+      const frequency = document.getElementById("frequency").value;
+      const intervalValue = parseInt(document.getElementById("interval").value);
+      
+      // Validate interval based on check-out distance
+      if (frequency === "Weekly") {
+        let maxInterval = 1;
+        if (weeksUntilCheckOut <= 2) {
+          maxInterval = 3; // If check-out is within 2 weeks, max interval is 3 weeks
+        } else if (weeksUntilCheckOut <= 4) {
+          maxInterval = 2; // If check-out is within 4 weeks, max interval is 2 weeks
+        } else {
+          maxInterval = 1; // Otherwise, max interval is 1 week
+        }
+        
+        if (intervalValue > maxInterval) {
+          e.preventDefault();
+          alert(`For your selected check-out date (${weeksUntilCheckOut} weeks away), the maximum recurrence interval is ${maxInterval} week(s).`);
+          return;
+        }
+      }
+    }
+  });
+</script>
+
+<script>
+function checkAvailability() {
+    const checkIn = document.getElementById('checkIn').value;
+    const checkOut = document.getElementById('checkOut').value;
+    const rooms = document.getElementById('rooms') ? document.getElementById('rooms').value : 1;
+    const availabilityResult = document.getElementById('availabilityResult');
+
+    if (!checkIn || !checkOut) {
+        availabilityResult.innerText = "Please select check-in and check-out dates.";
+        availabilityResult.style.color = 'red';
+        return;
+    }
+
+    fetch(`/Home/GetAllRoomAvailabilities?checkIn=${checkIn}&checkOut=${checkOut}&rooms=${rooms}`)
+        .then(response => response.json())
+        .then(data => {
+            let msg = '';
+            let anyAvailable = false;
+            data.forEach(room => {
+                if (room.isAvailable) {
+                    msg += `${room.roomName}: ${room.available} Available Rooms\n`;
+                    anyAvailable = true;
+                } else {
+                    msg += `${room.roomName}: Not available for the selected dates\n`;
+                }
+            });
+            availabilityResult.innerText = msg;
+            availabilityResult.style.color = anyAvailable ? 'green' : 'red';
+            if (anyAvailable) {
+                showBookingForm();
+            } else {
+                document.getElementById('bookingFormContainer').style.display = 'none';
+            }
+        });
+}
+</script>
+
+<script>
+function updateRoomAvailabilities() {
+    const checkIn = document.getElementById('checkIn').value;
+    const checkOut = document.getElementById('checkOut').value;
+    const rooms = document.getElementById('rooms').value;
+    if (!checkIn || !checkOut) return;
+
+    fetch(`/Home/GetAllRoomAvailabilities?checkIn=${checkIn}&checkOut=${checkOut}&rooms=${rooms}`)
+        .then(response => response.json())
+        .then(data => {
+            data.forEach(room => {
+                const el = document.querySelector(`[data-room-name="${room.roomName}"] .available-rooms`);
+                if (el) {
+                    if (room.isAvailable) {
+                        el.innerText = `${room.available} Available Rooms`;
+                    } else {
+                        el.innerText = `Not available for the selected dates`;
+                    }
+                }
+            });
+        });
+}
+
+// Call this when dates change
+document.getElementById('checkIn').addEventListener('change', updateRoomAvailabilities);
+document.getElementById('checkOut').addEventListener('change', updateRoomAvailabilities);
+document.getElementById('rooms').addEventListener('change', updateRoomAvailabilities);
+</script>
+
+<script>
+function showBookingForm() {
+    // Copy dates from top pickers to form pickers
+    var topCheckIn = document.getElementById('checkIn');
+    var topCheckOut = document.getElementById('checkOut');
+    var formCheckIn = document.querySelector('.booking-form-container input[name="CheckIn"]');
+    var formCheckOut = document.querySelector('.booking-form-container input[name="CheckOut"]');
+    if (topCheckIn && formCheckIn) {
+        formCheckIn.value = topCheckIn.value;
+        formCheckIn.setAttribute('min', topCheckIn.getAttribute('min'));
+    }
+    if (topCheckOut && formCheckOut) {
+        formCheckOut.value = topCheckOut.value;
+        formCheckOut.setAttribute('min', topCheckIn.value);
+    }
+    document.getElementById('bookingFormContainer').style.display = 'block';
+    document.getElementById('bookingFormContainer').scrollIntoView({ behavior: 'smooth' });
+}
+</script>
+
 }

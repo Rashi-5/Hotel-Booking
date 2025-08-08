@@ -1,0 +1,184 @@
+@model List<BookingFormModel>
+@{
+    ViewData["Title"] = "My Bookings";
+}
+
+<div style="display: flex; justify-content: space-between;  margin: 1.5rem 1rem;"> 
+    <h2>My Bookings</h2>
+    <button
+      type="button"
+      class="btn btn-success"
+      style="padding: 0.5rem 1rem; font-weight: 500; border-radius: 4px;"
+      onclick="window.location.href='/Home/Booking'"
+    >
+  Back to Booking
+</button>
+</div>
+
+@if (Model == null || !Model.Any())
+{
+    <div class="alert alert-info mt-4">Your bookings will show up here..</div>
+}
+else
+{
+    <div class="table-responsive" style="margin: 1rem;">
+        <table class="table table-bordered table-custom">
+            <thead>
+                <tr>
+                    <th>Check-In Date</th>
+                    <th>Check-Out Date</th>
+                    <th>Customer Name</th>
+                    <th>Room Type</th>
+                    <th>Special Request</th>
+                    <th>Number of Rooms</th>
+                    <th>Total Price ($)</th>
+                    <th>Guests</th>
+                    <th>Booking</th>
+                    <th>Days</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            @foreach (var booking in Model)
+            {
+                <tr>
+                    <td>@booking.CheckIn.ToShortDateString()</td>
+                    <td>@booking.CheckOut.ToShortDateString()</td>
+                    <td>@booking.CustomerName</td>
+                    <td>@booking.RoomType</td>
+                    <td>@booking.Note</td>
+                    <td>@booking.NumberOfRooms</td>
+                    <td>@booking.TotalPrice.ToString("F2")</td>
+                    <td> Adult : @booking.Adult.ToString("F0") Children : @booking.Children.ToString("F0")</td>
+                    <td>@(booking.Frequency ?? booking.BookingType)</td>
+                    <td>@((booking.Days != null && booking.Days.Any()) ? string.Join(", ", booking.Days) : booking.BookingType)</td>
+                    <td>
+                        <div style="display: flex;">
+                            <form asp-action="DeleteBooking" method="post" style="display:inline;">
+                                <input type="hidden" name="bookingId" value="@booking.BookingId" />
+                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this booking?');">Delete</button>
+                            </form>
+                            <button type="button" class="btn btn-warning btn-sm" onclick="showEditBookingForm('@booking.BookingId')">Edit</button>
+                        </div>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+
+        <form id="pdfForm" asp-action="DownloadReport" method="post" style="display:inline;">
+            @Html.AntiForgeryToken()
+            <button type="button" class="btn btn-primary mb-3" onclick="downloadPdfReport()">Download PDF Report</button>
+        </form>
+    </div>
+}
+
+<div id="editBookingFormContainer"></div>
+
+<script>
+function downloadPdfReport() {
+    const token = document.querySelector('#pdfForm input[name="__RequestVerificationToken"]')?.value;
+
+    fetch('/User/DownloadReport', {
+        method: 'POST',
+        headers: {
+            'RequestVerificationToken': token
+        }
+    })
+    .then(response => {
+        if (!response.ok) throw new Error('Failed to fetch PDF');
+        return response.blob();
+    })
+    .then(blob => {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'MyBookingsReport.pdf';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+    })
+    .catch(err => {
+        console.error(err);
+        alert("Download failed: " + err.message);
+    });
+}
+
+function showEditBookingForm(bookingId) {
+    fetch('/User/EditBookingPartial?bookingId=' + bookingId)
+        .then(response => response.text())
+        .then(html => {
+            document.getElementById('editBookingFormContainer').innerHTML = html;
+            document.getElementById('bookingFormContainer').style.display = 'block';
+            document.getElementById('bookingFormContainer').scrollIntoView({ behavior: 'smooth' });
+        });
+}
+
+function toggleRecurrence() {
+    var recurring = document.getElementById('isRecurring').checked;
+    document.getElementById('recurrenceOptions').style.display = recurring ? 'block' : 'none';
+    if (recurring && typeof updateRecurrenceUI === "function") {
+        updateRecurrenceUI();
+    }
+}
+
+function updateRecurrenceUI() {
+    const frequency = document.getElementById('frequency').value;
+    const interval = document.getElementById('interval').value;
+    const intervalLabel = document.getElementById('intervalLabel');
+    const weeklyOptions = document.getElementById('weeklyOptions');
+    const recurrenceSummary = document.getElementById('recurrenceSummary');
+    
+    // Update interval label
+    switch(frequency) {
+        case 'Daily':
+            intervalLabel.textContent = interval == 1 ? 'day' : 'days';
+            weeklyOptions.style.display = 'none';
+            break;
+        case 'Weekly':
+            intervalLabel.textContent = interval == 1 ? 'week' : 'weeks';
+            weeklyOptions.style.display = 'block';
+            break;
+        case 'Monthly':
+            intervalLabel.textContent = interval == 1 ? 'month' : 'months';
+            weeklyOptions.style.display = 'none';
+            break;
+    }
+    
+    // Update summary
+    let summary = `Book ${frequency.toLowerCase()}`;
+    if (interval > 1) {
+        summary += ` every ${interval} ${intervalLabel.textContent}`;
+    }
+    
+    if (frequency === 'Weekly' && weeklyOptions.style.display === 'block') {
+        const selectedDays = Array.from(document.querySelectorAll('input[name="days"]:checked'))
+            .map(cb => cb.value);
+        if (selectedDays.length > 0) {
+            summary += ` on ${selectedDays.join(', ')}`;
+        }
+    }
+    
+    summary += ' starting from check-in date';
+    recurrenceSummary.textContent = summary;
+}
+
+// Initialize the form when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    // Add event listeners for day checkboxes
+    const dayCheckboxes = document.querySelectorAll('input[name="days"]');
+    dayCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', updateRecurrenceUI);
+    });
+    
+    // Initialize recurrence display if recurring is already selected
+    if (document.getElementById('isRecurring').checked) {
+        toggleRecurrence();
+    }
+    
+    // Show the form container
+    document.getElementById('bookingFormContainer').style.display = 'block';
+});
+
+</script>

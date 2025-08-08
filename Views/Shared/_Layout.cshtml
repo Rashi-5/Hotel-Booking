@@ -8,10 +8,28 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/HotelBookingSystem.styles.css" asp-append-version="true" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+      .btn, button, .btn-primary, .btn-success, .btn-warning, .btn-danger, .btn-outline-primary, .btn-outline-success, .btn-outline-warning, .btn-outline-danger {
+        background-color: #D1E7D0 !important;
+        border-color: #76695E !important;
+        color: #000 !important;
+      }
+      .btn-outline-primary, .btn-outline-success, .btn-outline-warning, .btn-outline-danger {
+        background-color: transparent !important;
+        color: #3C433D !important;
+        border-color: #76695E !important;
+      }
+      .btn:hover, button:hover, .btn-primary:hover, .btn-success:hover, .btn-warning:hover, .btn-danger:hover, .btn-outline-primary:hover, .btn-outline-success:hover, .btn-outline-warning:hover, .btn-outline-danger:hover {
+        background-color: #D1E7D0 !important;
+        border-color: #76695E !important;
+        color: #000 !important;
+      }
+    </style>
 </head>
-<body>
+<body style="background-color: #EFF0EF;">
+    @await Html.PartialAsync("_Snackbar")
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-green-cabin border-bottom box-shadow mb-3">
+        <nav style="max-width: 100%" class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-green-cabin border-bottom box-shadow">
             <div class="container-fluid">
                 <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
                 <img src='/images/logo.png' alt="Hotel Logo" class="logo-round" />
@@ -23,11 +41,21 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav ms-auto">
                         <li class="nav-item">
-                            <a class="nav-link nav-link-custom" asp-controller="Home" asp-action="Booking">
-                                <i class="fas fa-home"></i> Booking
+                            <a class="nav-link nav-link-custom" asp-controller="Home" asp-action="Index">
+                                <i class="fas fa-home"> </i> Dashboard
                             </a>
                         </li>
                         <li class="nav-item">
+                            <a class="nav-link nav-link-custom" asp-controller="User" asp-action="Login">
+                                <i class="fas fa-sign-in-alt"></i> Login
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link nav-link-custom" asp-controller="User" asp-action="MyBookings">
+                                <i class="fas fa-calendar-check"></i> My Bookings
+                            </a>
+                        </li>
+                        <li class="nav-item" style="margin-left: 2rem;">
                             <a class="nav-link nav-link-custom" asp-controller="Admin" asp-action="Privacy">
                                 Admin <i class="fas fa-user-shield"></i> 
                             </a>
@@ -37,7 +65,7 @@
             </div>
         </nav>
     </header>
-    <div class="container" >
+    <div class="container" style="--bs-gutter-x: 0; padding-left: 0 !important; padding-right: 0 !important; max-width: 100%;" >
         <main role="main" >
             @RenderBody()
         </main>
